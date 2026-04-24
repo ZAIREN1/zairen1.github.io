@@ -1,8 +1,128 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ZAIREN</title>
-  </head>
+  <title>ZAIREN</title>
+  <style>
+    * { 
+      cursor: none; 
+      box-sizing: border-box;
+    }
+
+    #cursor {
+      width: 12px;
+      height: 12px;
+      background: cyan;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      box-shadow: 0 0 10px cyan, 0 0 20px cyan;
+      z-index: 9999;
+    }
+
+    #cursor-trail {
+      width: 25px;
+      height: 25px;
+      border: 2px solid magenta;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.7;
+    }
+
+    .glow {
+      color: white;
+      text-shadow: 0 0 10px cyan, 0 0 20px cyan, 0 0 40px cyan;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fadein {
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(6); opacity: 0; }
+    }
+
+    .ripple-effect {
+      position: fixed;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: 3px solid cyan;
+      border-radius: 50%;
+      animation: ripple 0.8s linear;
+      pointer-events: none;
+      box-shadow: 0 0 10px cyan, 0 0 20px cyan;
+    }
+
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: cyan;
+      border-radius: 50%;
+      box-shadow: 0 0 6px cyan;
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-10vh); opacity: 0; }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hoverable {
+      display: inline-block;
+      transition: transform 0.3s ease, text-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    nav a {
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      transform: translateY(-4px);
+      color: white !important;
+      text-shadow: 0 0 10px cyan, 0 0 20px cyan;
+    }
+
+    img {
+      transition: all 0.3s ease;
+    }
+
+    img:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 0 20px cyan, 0 0 40px cyan;
+    }
+.fadein {
+  animation: fadeIn 1.5s ease forwards;
+  animation-fill-mode: forwards;
+}
+
+.hoverable:hover {
+  animation: none !important;
+}
+  </style>
+</head>
   <body style="
     background-image: url('https://i.pinimg.com/originals/f5/f2/74/f5f27448c036af645c27467c789ad759.gif');
     background-size: cover;
@@ -13,70 +133,159 @@
     padding: 20px;
   ">
 
-    <!-- Top section: Text on left, image on right -->
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      
-      <!-- Left side text -->
+    <div id="cursor"></div>
+    <div id="cursor-trail"></div>
+    <div id="particles"></div>
+
+    <div class="content" style="display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <h1 style="
-          color: white;
+        <h1 class="glow fadein hoverable" style="
           font-weight: bold;
           font-style: italic;
           background-color: rgba(0,0,0,0.5);
           padding: 10px;
-          display: inline-block;
           margin-bottom: 1px;
+          margin-top: 100px;
         ">Hey There!</h1>
-
-           <br>
-        <p style="
+        <br>
+        <p class="fadein hoverable" style="
           font-size: 30px;
           font-weight: bold;
           color: lime;
           background-color: rgba(0,0,0,0.7);
           padding: 10px;
-          display: inline-block;
           margin-bottom: 1px;
         ">This is my first webpage.</p>
-
         <br><br>
-
-        <h2 style="
+        <h2 class="fadein hoverable" style="
           background-color: rgba(0,0,0,0.5);
           padding: 10px;
           color: white;
-          font-size: 40px;
-          display: block;
+          font-size: 35px;
           margin-top: 1px;
         ">About Me (why i am learning coding)</h2>
-
-        <p style="
+        <br>
+        <p class="fadein hoverable" style="
           font-size: 30px;
           color: aqua;
           font-weight: bold;
           text-decoration: underline;
           background-color: rgba(0,0,0,0.5);
           padding: 5px;
-          display: inline-block;
           margin-top: 1px;
         ">To get a new skill</p>
-
         <br><br>
-
-        <a href="https://haunt.gg/zairenxx" style="color: white;">Personal Info</a>
+        <a href="https://haunt.gg/zairenxx" class="fadein hoverable" style="
+          color: white;
+          font-size: 18px;
+          text-decoration: none;
+          background-color: rgba(0,0,0,0.5);
+          padding: 8px 15px;
+          border: 1px solid cyan;
+          border-radius: 5px;
+        ">Personal Info</a>
       </div>
 
-      <!-- Right side image -->
-      <img src="https://i.pinimg.com/originals/46/e4/96/46e4962641506da6e16f9eb90e59ce92.gif" style="
-        width: 300px;
-        height: 300px;
+      <img class="fadein" src="https://i.pinimg.com/originals/46/e4/96/46e4962641506da6e16f9eb90e59ce92.gif" style="
+        width: 200px;
+        height: 200px;
         border-radius: 20px;
-        border: 3px solid cyan;
+        border: 3px solid purple;
       ">
-
     </div>
+
+    <nav class="content" style="
+      background-color: rgba(0,0,0,0.8);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 999;
+      box-sizing: border-box;
+    ">
+      <span class="glow hoverable" style="font-size: 22px; font-weight: bold; font-style: italic;">⚡ ZAIREN</span>
+      <div style="display: flex; gap: 30px;">
+        <a href="#home" style="color: cyan; text-decoration: none; font-size: 18px; font-weight: bold;">Home</a>
+        <a href="#about" style="color: cyan; text-decoration: none; font-size: 18px; font-weight: bold;">About</a>
+        <a href="#contact" style="color: cyan; text-decoration: none; font-size: 18px; font-weight: bold;">Contact</a>
+      </div>
+    </nav>
+
+    <script>
+      // Cursor movement
+      const cursor = document.getElementById('cursor');
+      const trail = document.getElementById('cursor-trail');
+      let mouseX = 0, mouseY = 0;
+      let trailX = 0, trailY = 0;
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.left = mouseX - 6 + 'px';
+        cursor.style.top = mouseY - 6 + 'px';
+      });
+
+      // Smooth trail animation
+      function animateTrail() {
+        trailX += (mouseX - trailX) * 0.15;
+        trailY += (mouseY - trailY) * 0.15;
+        trail.style.left = trailX - 12 + 'px';
+        trail.style.top = trailY - 12 + 'px';
+        requestAnimationFrame(animateTrail);
+      }
+      animateTrail();
+
+      // Ripple on click
+      document.addEventListener('click', (e) => {
+        for(let i = 0; i < 3; i++) {
+          setTimeout(() => {
+            const ripple = document.createElement('div');
+            ripple.classList.add('ripple-effect');
+            ripple.style.left = e.clientX - 15 + 'px';
+            ripple.style.top = e.clientY - 15 + 'px';
+            ripple.style.zIndex = '9997';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+          }, i * 150);
+        }
+      });
+
+      // Hover effects
+      document.querySelectorAll('.hoverable').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    el.style.animation = 'none';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(-10px)';
+    el.style.textShadow = '0 0 10px white, 0 0 25px cyan, 0 0 50px cyan';
+    el.style.background = 'linear-gradient(90deg, transparent, rgba(0,255,255,0.3), transparent)';
+    el.style.borderRadius = '8px';
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = 'translateY(0px)';
+    el.style.textShadow = '';
+    el.style.background = '';
+    el.style.borderRadius = '';
+  });
+});
+
+
+      // Floating particles
+      const container = document.getElementById('particles');
+      for(let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.classList.add('particle');
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (Math.random() * 5 + 4) + 's';
+        p.style.animationDelay = (Math.random() * 5) + 's';
+        const size = (Math.random() * 4 + 2) + 'px';
+        p.style.width = size;
+        p.style.height = size;
+        container.appendChild(p);
+      }
+    </script>
 
   </body>
 </html>
-</html>
-    
