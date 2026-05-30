@@ -13,7 +13,14 @@
   --text:#E8F4F8;--muted:#5A7A95;
 }
 html{scroll-behavior:smooth;overflow-x:hidden;}
-body{font-family:'Outfit',sans-serif;background:#05080F;color:var(--text);min-height:100vh;overflow-x:hidden;perspective:1000px;}
+body{font-family:'Outfit',sans-serif;background:#05080F;color:var(--text);min-height:100vh;overflow-x:hidden;perspective:1500px;}
+
+/* === INITIAL HIDE STATE === */
+.build-element{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
 
 /* === LOADING SCREEN === */
 #loadingScreen{
@@ -22,114 +29,129 @@ body{font-family:'Outfit',sans-serif;background:#05080F;color:var(--text);min-he
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity 0.8s ease, visibility 0.8s ease;
 }
-#loadingScreen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+#loadingScreen.hidden{opacity:0;visibility:hidden;}
 .loading-logo{
-  font-size:4rem;font-weight:900;
+  font-size:5rem;font-weight:900;
   background:linear-gradient(135deg,#fff 0%,var(--aqua) 50%,#80DEEA 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;animation:logoGlow 2s ease-in-out infinite;
+  background-clip:text;
   margin-bottom:2rem;transform:scale(0);
   animation:logoPopIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  filter:drop-shadow(0 0 40px rgba(0,198,212,0.8));
 }
 @keyframes logoPopIn{
   0%{transform:scale(0) rotate(-180deg);opacity:0;}
   100%{transform:scale(1) rotate(0deg);opacity:1;}
 }
-@keyframes logoGlow{
-  0%,100%{filter:drop-shadow(0 0 20px rgba(0,198,212,0.6));}
-  50%{filter:drop-shadow(0 0 40px rgba(0,198,212,1));}
+.loading-text{
+  font-size:1.2rem;color:var(--aqua);letter-spacing:0.3em;
+  animation:loadingPulse 1.5s ease-in-out infinite;
+  text-transform:uppercase;font-weight:700;
 }
-.loading-bar-container{width:300px;height:4px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;position:relative;}
-.loading-bar{height:100%;background:linear-gradient(90deg,var(--aqua),#80DEEA,var(--aqua));
-  background-size:200% 100%;animation:loadingProgress 2s ease-out forwards,loadingShine 1.5s linear infinite;
-  box-shadow:0 0 20px var(--aqua);}
-@keyframes loadingProgress{from{width:0%;}to{width:100%;}}
-@keyframes loadingShine{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.loading-text{margin-top:1rem;font-size:0.9rem;color:var(--muted);letter-spacing:0.1em;animation:loadingPulse 1.5s ease-in-out infinite;}
-@keyframes loadingPulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+@keyframes loadingPulse{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:1;transform:scale(1.05);}}
+
+/* === 3D BUILD ANIMATIONS === */
+@keyframes buildFromSpace{
+  0%{
+    opacity:0;
+    transform:translateZ(-500px) rotateX(90deg) translateY(200px) scale(0.3);
+    filter:blur(20px);
+  }
+  60%{
+    transform:translateZ(30px) rotateX(-5deg) translateY(-20px) scale(1.05);
+    filter:blur(0);
+  }
+  100%{
+    opacity:1;
+    transform:translateZ(0) rotateX(0) translateY(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@keyframes buildSlideRotate{
+  0%{
+    opacity:0;
+    transform:translateX(-300px) rotateY(-90deg) translateZ(-200px) scale(0.5);
+    filter:blur(15px);
+  }
+  60%{
+    transform:translateX(20px) rotateY(5deg) translateZ(20px) scale(1.05);
+  }
+  100%{
+    opacity:1;
+    transform:translateX(0) rotateY(0) translateZ(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@keyframes buildPopIn{
+  0%{
+    opacity:0;
+    transform:scale(0) rotateZ(-360deg) translateZ(-300px);
+    filter:blur(20px);
+  }
+  70%{
+    transform:scale(1.15) rotateZ(15deg) translateZ(20px);
+  }
+  100%{
+    opacity:1;
+    transform:scale(1) rotateZ(0) translateZ(0);
+    filter:blur(0);
+  }
+}
+
+@keyframes buildFadeUp{
+  0%{
+    opacity:0;
+    transform:translateY(150px) translateZ(-200px) rotateX(45deg);
+    filter:blur(15px);
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) translateZ(0) rotateX(0);
+    filter:blur(0);
+  }
+}
+
+@keyframes buildFlipIn{
+  0%{
+    opacity:0;
+    transform:rotateY(-180deg) translateZ(-300px) scale(0.3);
+    filter:blur(20px);
+  }
+  60%{
+    transform:rotateY(15deg) translateZ(30px) scale(1.1);
+  }
+  100%{
+    opacity:1;
+    transform:rotateY(0) translateZ(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+@keyframes textBuild{
+  0%{
+    opacity:0;
+    transform:translateY(100px) translateZ(-200px) rotateX(90deg) scale(0.5);
+    filter:blur(10px);
+    letter-spacing:0.5em;
+  }
+  100%{
+    opacity:1;
+    transform:translateY(0) translateZ(0) rotateX(0) scale(1);
+    filter:blur(0);
+    letter-spacing:normal;
+  }
+}
+
+.build-active{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
 
 /* === 3D CANVAS BG === */
 #three-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
-
-/* === SITE WRAPPER === */
-#siteWrapper{opacity:0;transform:translateY(50px);transition:opacity 1s ease, transform 1s ease;}
-#siteWrapper.loaded{opacity:1;transform:translateY(0);}
-
-/* === 3D BUILD-IN ANIMATIONS === */
-.build-3d{
-  opacity:0;
-  transform:translateZ(-200px) rotateX(90deg);
-  animation:build3D 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes build3D{
-  0%{opacity:0;transform:translateZ(-200px) rotateX(90deg) translateY(100px);}
-  60%{transform:translateZ(20px) rotateX(-5deg) translateY(-10px);}
-  100%{opacity:1;transform:translateZ(0) rotateX(0) translateY(0);}
-}
-
-/* Delays for cascade effect */
-.delay-1{animation-delay:0.1s;}
-.delay-2{animation-delay:0.2s;}
-.delay-3{animation-delay:0.3s;}
-.delay-4{animation-delay:0.4s;}
-.delay-5{animation-delay:0.5s;}
-.delay-6{animation-delay:0.6s;}
-.delay-7{animation-delay:0.7s;}
-.delay-8{animation-delay:0.8s;}
-.delay-9{animation-delay:0.9s;}
-.delay-10{animation-delay:1s;}
-
-/* Text build animation */
-.text-build{
-  display:inline-block;opacity:0;
-  transform:translateZ(-100px) rotateY(90deg);
-  animation:textBuild 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes textBuild{
-  0%{opacity:0;transform:translateZ(-100px) rotateY(90deg) scale(0.5);}
-  60%{transform:translateZ(10px) rotateY(-10deg) scale(1.05);}
-  100%{opacity:1;transform:translateZ(0) rotateY(0) scale(1);}
-}
-
-/* Slide from sides */
-.slide-left{
-  opacity:0;transform:translateX(-100px) rotateY(-45deg);
-  animation:slideLeft 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes slideLeft{
-  0%{opacity:0;transform:translateX(-100px) rotateY(-45deg);}
-  100%{opacity:1;transform:translateX(0) rotateY(0);}
-}
-
-.slide-right{
-  opacity:0;transform:translateX(100px) rotateY(45deg);
-  animation:slideRight 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes slideRight{
-  0%{opacity:0;transform:translateX(100px) rotateY(45deg);}
-  100%{opacity:1;transform:translateX(0) rotateY(0);}
-}
-
-/* Pop-in effect */
-.pop-in{
-  opacity:0;transform:scale(0) rotateZ(-180deg);
-  animation:popIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes popIn{
-  0%{opacity:0;transform:scale(0) rotateZ(-180deg);}
-  60%{transform:scale(1.1) rotateZ(10deg);}
-  100%{opacity:1;transform:scale(1) rotateZ(0);}
-}
-
-/* Float up */
-.float-up{
-  opacity:0;transform:translateY(100px) translateZ(-50px);
-  animation:floatUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-@keyframes floatUp{
-  0%{opacity:0;transform:translateY(100px) translateZ(-50px);}
-  100%{opacity:1;transform:translateY(0) translateZ(0);}
-}
 
 /* content */
 nav,section,.hero,.infobar,footer{position:relative;z-index:10;transform-style:preserve-3d;}
@@ -318,64 +340,56 @@ footer p{font-size:.82rem;color:var(--muted);}
 <!-- LOADING SCREEN -->
 <div id="loadingScreen">
   <div class="loading-logo">AquaMC</div>
-  <div class="loading-bar-container">
-    <div class="loading-bar"></div>
-  </div>
-  <div class="loading-text">BUILDING 3D EXPERIENCE...</div>
+  <div class="loading-text">INITIALIZING 3D...</div>
 </div>
 
 <canvas id="three-canvas"></canvas>
 
-<!-- SITE WRAPPER -->
-<div id="siteWrapper">
-
 <!-- NAV -->
-<nav class="build-3d delay-1">
-  <a href="#" class="logo slide-left delay-2">
+<nav class="build-element" id="nav">
+  <a href="#" class="logo">
     <img src="logo.png" class="logo-img" alt="AquaMC" onerror="this.style.display='none';document.getElementById('lf').style.display='flex'"/>
     <div id="lf" class="logo-fallback" style="display:none;">AM</div>
     <span class="logo-text">Aqua<span>MC</span></span>
   </a>
-  <ul class="pop-in delay-3">
-    <li class="text-build delay-4"><a href="#ranks">Ranks</a></li>
-    <li class="text-build delay-5"><a href="#crates">Crates</a></li>
-    <li class="text-build delay-6"><a href="#features">Info</a></li>
+  <ul>
+    <li><a href="#ranks">Ranks</a></li>
+    <li><a href="#crates">Crates</a></li>
+    <li><a href="#features">Info</a></li>
   </ul>
-  <div id="navRight" class="slide-right delay-7"><button class="nav-btn" onclick="openAuth()">My Account</button></div>
+  <div id="navRight"><button class="nav-btn" onclick="openAuth()">My Account</button></div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge pop-in delay-8"><span class="dot"></span> Server Online · 1.21.11</div>
-  <h1 class="build-3d delay-9">
-    <span class="text-build delay-9">Aqua</span><span class="text-build delay-10">MC</span> <span class="text-build delay-10">Store</span>
-  </h1>
-  <p class="float-up delay-10">Unlock legendary ranks, deadly crates & ultimate power on the best Lifesteal server.</p>
-  <div class="hero-actions">
-    <button class="btn-primary pop-in delay-10" onclick="document.getElementById('ranks').scrollIntoView({behavior:'smooth'})">Browse Ranks</button>
-    <button class="btn-secondary pop-in delay-10" onclick="document.getElementById('crates').scrollIntoView({behavior:'smooth'})">Open Crates</button>
+  <div class="hero-badge build-element" id="badge"><span class="dot"></span> Server Online · 1.21.11</div>
+  <h1 class="build-element" id="title">AquaMC Store</h1>
+  <p class="build-element" id="subtitle">Unlock legendary ranks, deadly crates & ultimate power on the best Lifesteal server.</p>
+  <div class="hero-actions build-element" id="heroButtons">
+    <button class="btn-primary" onclick="document.getElementById('ranks').scrollIntoView({behavior:'smooth'})">Browse Ranks</button>
+    <button class="btn-secondary" onclick="document.getElementById('crates').scrollIntoView({behavior:'smooth'})">Open Crates</button>
   </div>
-  <div class="ip-chip float-up delay-10" onclick="copyIP()">⚡ aquamc.hidenplay.net · click to copy</div>
+  <div class="ip-chip build-element" id="ipChip" onclick="copyIP()">⚡ aquamc.hidenplay.net · click to copy</div>
 </div>
 
 <!-- INFOBAR -->
-<div class="infobar build-3d delay-10">
-  <div class="infobar-item slide-left delay-10"><span class="status-dot"></span><strong>Online</strong></div>
-  <div class="infobar-item pop-in delay-10">Players: <strong>128 / 500</strong></div>
-  <div class="infobar-item pop-in delay-10">Version: <strong>1.21.11</strong></div>
-  <div class="infobar-item pop-in delay-10">Mode: <strong>Lifesteal</strong></div>
-  <div class="infobar-item slide-right delay-10">Discord: <a class="dc-link" href="https://discord.gg/yNaWs5ypnh" target="_blank">discord.gg/yNaWs5ypnh</a></div>
+<div class="infobar build-element" id="infobar">
+  <div class="infobar-item"><span class="status-dot"></span><strong>Online</strong></div>
+  <div class="infobar-item">Players: <strong>128 / 500</strong></div>
+  <div class="infobar-item">Version: <strong>1.21.11</strong></div>
+  <div class="infobar-item">Mode: <strong>Lifesteal</strong></div>
+  <div class="infobar-item">Discord: <a class="dc-link" href="https://discord.gg/yNaWs5ypnh" target="_blank">discord.gg/yNaWs5ypnh</a></div>
 </div>
 
 <!-- RANKS -->
 <section id="ranks">
   <div class="section-header">
-    <div class="section-label build-3d delay-1">Ranks</div>
-    <div class="section-title build-3d delay-2">Choose Your Power</div>
-    <div class="section-sub float-up delay-3">Channel anime legends and dominate the Lifesteal server.</div>
+    <div class="section-label build-element" id="ranksLabel">Ranks</div>
+    <div class="section-title build-element" id="ranksTitle">Choose Your Power</div>
+    <div class="section-sub build-element" id="ranksSub">Channel anime legends and dominate the Lifesteal server.</div>
   </div>
   <div class="ranks-grid">
-    <div class="rank-card build-3d delay-3" style="--rank-color:#ECEFF1;--rank-glow:rgba(236,239,241,0.1);">
+    <div class="rank-card build-element" id="rank1" style="--rank-color:#ECEFF1;--rank-glow:rgba(236,239,241,0.1);">
       <span class="rank-emoji">💀</span>
       <div class="rank-name">Shinigami</div>
       <div class="rank-desc">Reap souls as the God of Death himself.</div>
@@ -384,7 +398,7 @@ footer p{font-size:.82rem;color:var(--muted);}
       <ul class="rank-perks"><li>1 Home Location</li><li>Color Chat</li><li>Kit Shinigami</li><li>[SHINIGAMI] prefix</li></ul>
       <button class="rank-buy-btn" onclick="openBuy('SHINIGAMI Rank','200৳','💀')">Buy Now</button>
     </div>
-    <div class="rank-card build-3d delay-4" style="--rank-color:#00BCD4;--rank-glow:rgba(0,188,212,0.15);">
+    <div class="rank-card build-element" id="rank2" style="--rank-color:#00BCD4;--rank-glow:rgba(0,188,212,0.15);">
       <span class="rank-emoji">👁️</span>
       <div class="rank-name">Ghoul</div>
       <div class="rank-desc">Devour your enemies like a full-powered Ghoul.</div>
@@ -393,7 +407,7 @@ footer p{font-size:.82rem;color:var(--muted);}
       <ul class="rank-perks"><li>3 Home Locations</li><li>Color Chat</li><li>Kit Ghoul</li><li>[GHOUL] prefix</li><li>Speed Boost Perk</li></ul>
       <button class="rank-buy-btn" onclick="openBuy('GHOUL Rank','300৳','👁️')">Buy Now</button>
     </div>
-    <div class="rank-card build-3d delay-5" style="--rank-color:#FF6F00;--rank-glow:rgba(255,111,0,0.15);">
+    <div class="rank-card build-element" id="rank3" style="--rank-color:#FF6F00;--rank-glow:rgba(255,111,0,0.15);">
       <span class="rank-emoji">⚡</span>
       <div class="rank-name">Special Grade</div>
       <div class="rank-desc">Wield Jujutsu power as a Special Grade Sorcerer.</div>
@@ -402,7 +416,7 @@ footer p{font-size:.82rem;color:var(--muted);}
       <ul class="rank-perks"><li>6 Home Locations</li><li>Full Chat Format</li><li>Kit Special Grade</li><li>[SP.GRADE] prefix</li><li>Fly Access</li><li>Custom Join Message</li></ul>
       <button class="rank-buy-btn" onclick="openBuy('SPECIAL GRADE Rank','400৳','⚡')">Buy Now</button>
     </div>
-    <div class="rank-card build-3d delay-6" style="--rank-color:#9C27B0;--rank-glow:rgba(156,39,176,0.15);">
+    <div class="rank-card build-element" id="rank4" style="--rank-color:#9C27B0;--rank-glow:rgba(156,39,176,0.15);">
       <span class="rank-emoji">🐉</span>
       <div class="rank-name">Saiyan</div>
       <div class="rank-desc">Transform beyond limits like a true Super Saiyan.</div>
@@ -411,7 +425,7 @@ footer p{font-size:.82rem;color:var(--muted);}
       <ul class="rank-perks"><li>5 Home Locations</li><li>Color Chat</li><li>Kit Saiyan</li><li>[SAIYAN] prefix</li><li>Fly in Spawn</li></ul>
       <button class="rank-buy-btn" onclick="openBuy('SAIYAN Rank','500৳','🐉')">Buy Now</button>
     </div>
-    <div class="rank-card build-3d delay-7" style="--rank-color:#E53935;--rank-glow:rgba(229,57,53,0.15);">
+    <div class="rank-card build-element" id="rank5" style="--rank-color:#E53935;--rank-glow:rgba(229,57,53,0.15);">
       <div class="rank-badge-pop">TOP RANK</div>
       <span class="rank-emoji">🔴</span>
       <div class="rank-name">Akatsuki</div>
@@ -427,12 +441,12 @@ footer p{font-size:.82rem;color:var(--muted);}
 <!-- CRATES -->
 <section id="crates" class="crates-section">
   <div class="section-header">
-    <div class="section-label build-3d delay-1">Crates</div>
-    <div class="section-title build-3d delay-2">Unlock the Crates</div>
-    <div class="section-sub float-up delay-3">Spin for rare loot, gear, and exclusive rewards hidden inside each crate.</div>
+    <div class="section-label build-element" id="cratesLabel">Crates</div>
+    <div class="section-title build-element" id="cratesTitle">Unlock the Crates</div>
+    <div class="section-sub build-element" id="cratesSub">Spin for rare loot, gear, and exclusive rewards hidden inside each crate.</div>
   </div>
   <div class="crates-grid">
-    <div class="crate-card build-3d delay-3" style="--crate-color:#00C6D4;--crate-glow:rgba(0,198,212,0.25);">
+    <div class="crate-card build-element" id="crate1" style="--crate-color:#00C6D4;--crate-glow:rgba(0,198,212,0.25);">
       <div class="crate-header"><div class="crate-icon-wrap">🏆</div><div class="crate-name">Champion</div><div class="crate-subtitle">Rise above the rest</div></div>
       <div class="crate-body">
         <div class="crate-items">
@@ -446,7 +460,7 @@ footer p{font-size:.82rem;color:var(--muted);}
         <button class="crate-buy-btn" onclick="openBuy('Champion Crate Key','40৳','🏆')">Buy Key</button>
       </div>
     </div>
-    <div class="crate-card build-3d delay-4" style="--crate-color:#F57F17;--crate-glow:rgba(245,127,23,0.25);">
+    <div class="crate-card build-element" id="crate2" style="--crate-color:#F57F17;--crate-glow:rgba(245,127,23,0.25);">
       <div class="crate-header"><div class="crate-icon-wrap">🏅</div><div class="crate-name">Elite</div><div class="crate-subtitle">Top-tier rewards</div></div>
       <div class="crate-body">
         <div class="crate-items">
@@ -460,7 +474,7 @@ footer p{font-size:.82rem;color:var(--muted);}
         <button class="crate-buy-btn" onclick="openBuy('Elite Crate Key','60৳','🏅')">Buy Key</button>
       </div>
     </div>
-    <div class="crate-card build-3d delay-5" style="--crate-color:#7B1FA2;--crate-glow:rgba(123,31,162,0.25);">
+    <div class="crate-card build-element" id="crate3" style="--crate-color:#7B1FA2;--crate-glow:rgba(123,31,162,0.25);">
       <div class="crate-header"><div class="crate-icon-wrap">♾️</div><div class="crate-name">Immortal</div><div class="crate-subtitle">Endless power awaits</div></div>
       <div class="crate-body">
         <div class="crate-items">
@@ -474,7 +488,7 @@ footer p{font-size:.82rem;color:var(--muted);}
         <button class="crate-buy-btn" onclick="openBuy('Immortal Crate Key','80৳','♾️')">Buy Key</button>
       </div>
     </div>
-    <div class="crate-card build-3d delay-6" style="--crate-color:#B71C1C;--crate-glow:rgba(183,28,28,0.25);">
+    <div class="crate-card build-element" id="crate4" style="--crate-color:#B71C1C;--crate-glow:rgba(183,28,28,0.25);">
       <div class="crate-header"><div class="crate-icon-wrap">☠️</div><div class="crate-name">Deadliest</div><div class="crate-subtitle">Supreme power inside</div></div>
       <div class="crate-body">
         <div class="crate-items">
@@ -494,28 +508,26 @@ footer p{font-size:.82rem;color:var(--muted);}
 <!-- FEATURES -->
 <section id="features">
   <div class="section-header">
-    <div class="section-label build-3d delay-1">Why AquaMC?</div>
-    <div class="section-title build-3d delay-2">Server Highlights</div>
+    <div class="section-label build-element" id="featuresLabel">Why AquaMC?</div>
+    <div class="section-title build-element" id="featuresTitle">Server Highlights</div>
   </div>
   <div class="features-grid">
-    <div class="feature-card build-3d delay-3"><div class="feature-icon">⚡</div><div><div class="feature-title">Instant Delivery</div><div class="feature-desc">Perks applied the moment your payment is confirmed.</div></div></div>
-    <div class="feature-card build-3d delay-4"><div class="feature-icon">🔒</div><div><div class="feature-title">Secure Payments</div><div class="feature-desc">Safe transactions handled via our Discord staff.</div></div></div>
-    <div class="feature-card build-3d delay-5"><div class="feature-icon">🎮</div><div><div class="feature-title">Lifesteal Mode</div><div class="feature-desc">Steal hearts. Dominate. Survive at all costs.</div></div></div>
-    <div class="feature-card build-3d delay-6"><div class="feature-icon">💬</div><div><div class="feature-title">24/7 Support</div><div class="feature-desc">Open a ticket on Discord — we respond fast.</div></div></div>
+    <div class="feature-card build-element" id="feature1"><div class="feature-icon">⚡</div><div><div class="feature-title">Instant Delivery</div><div class="feature-desc">Perks applied the moment your payment is confirmed.</div></div></div>
+    <div class="feature-card build-element" id="feature2"><div class="feature-icon">🔒</div><div><div class="feature-title">Secure Payments</div><div class="feature-desc">Safe transactions handled via our Discord staff.</div></div></div>
+    <div class="feature-card build-element" id="feature3"><div class="feature-icon">🎮</div><div><div class="feature-title">Lifesteal Mode</div><div class="feature-desc">Steal hearts. Dominate. Survive at all costs.</div></div></div>
+    <div class="feature-card build-element" id="feature4"><div class="feature-icon">💬</div><div><div class="feature-title">24/7 Support</div><div class="feature-desc">Open a ticket on Discord — we respond fast.</div></div></div>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="build-3d delay-7">
+<footer class="build-element" id="footer">
   <div class="footer-logo">Aqua<span>MC</span></div>
   <div class="footer-links">
-    <a href="#" class="text-build delay-8">Terms of Service</a><a href="#" class="text-build delay-8">Refund Policy</a>
-    <a href="https://discord.gg/yNaWs5ypnh" target="_blank" class="text-build delay-9">Discord</a><a href="#" class="text-build delay-9">Vote</a>
+    <a href="#">Terms of Service</a><a href="#">Refund Policy</a>
+    <a href="https://discord.gg/yNaWs5ypnh" target="_blank">Discord</a><a href="#">Vote</a>
   </div>
-  <p class="float-up delay-10">© 2026 AquaMC · Not affiliated with Mojang Studios · play.aquamc.net</p>
+  <p>© 2026 AquaMC · Not affiliated with Mojang Studios · play.aquamc.net</p>
 </footer>
-
-</div><!-- END SITE WRAPPER -->
 
 <!-- BUY MODAL -->
 <div class="overlay" id="buyOverlay">
@@ -569,35 +581,79 @@ footer p{font-size:.82rem;color:var(--muted);}
 
 <script>
 // ============================================================
-// LOADING SCREEN & 3D BUILD-IN SEQUENCE
+// SEQUENTIAL 3D BUILD ANIMATION SYSTEM
 // ============================================================
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loadingScreen').classList.add('hidden');
-    document.getElementById('siteWrapper').classList.add('loaded');
-    
-    // Trigger scroll-based animations on load
-    observeElements();
-  }, 2200); // 2.2s loading screen
-});
 
-// ============================================================
-// SCROLL-TRIGGERED 3D ANIMATIONS
-// ============================================================
-function observeElements() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'none';
+const buildSequence = [
+  // Phase 1: Loading (1500ms)
+  { delay: 1500, action: () => document.getElementById('loadingScreen').classList.add('hidden') },
+  
+  // Phase 2: Navigation (200ms after loading)
+  { delay: 1700, id: 'nav', animation: 'buildSlideRotate', duration: 900 },
+  
+  // Phase 3: Hero Section
+  { delay: 2200, id: 'badge', animation: 'buildPopIn', duration: 700 },
+  { delay: 2500, id: 'title', animation: 'buildFromSpace', duration: 1000 },
+  { delay: 3000, id: 'subtitle', animation: 'buildFadeUp', duration: 800 },
+  { delay: 3400, id: 'heroButtons', animation: 'buildPopIn', duration: 800 },
+  { delay: 3800, id: 'ipChip', animation: 'buildFadeUp', duration: 700 },
+  
+  // Phase 4: Infobar
+  { delay: 4200, id: 'infobar', animation: 'buildSlideRotate', duration: 800 },
+  
+  // Phase 5: Ranks Section Header
+  { delay: 4700, id: 'ranksLabel', animation: 'buildPopIn', duration: 600 },
+  { delay: 4900, id: 'ranksTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 5300, id: 'ranksSub', animation: 'buildFadeUp', duration: 700 },
+  
+  // Phase 6: Rank Cards (Shinigami → Ghoul → Special Grade → Saiyan → Akatsuki)
+  { delay: 5700, id: 'rank1', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6000, id: 'rank2', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6300, id: 'rank3', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6600, id: 'rank4', animation: 'buildFlipIn', duration: 900 },
+  { delay: 6900, id: 'rank5', animation: 'buildFlipIn', duration: 900 },
+  
+  // Phase 7: Crates Section Header
+  { delay: 7500, id: 'cratesLabel', animation: 'buildPopIn', duration: 600 },
+  { delay: 7700, id: 'cratesTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 8100, id: 'cratesSub', animation: 'buildFadeUp', duration: 700 },
+  
+  // Phase 8: Crate Cards
+  { delay: 8500, id: 'crate1', animation: 'buildFlipIn', duration: 900 },
+  { delay: 8800, id: 'crate2', animation: 'buildFlipIn', duration: 900 },
+  { delay: 9100, id: 'crate3', animation: 'buildFlipIn', duration: 900 },
+  { delay: 9400, id: 'crate4', animation: 'buildFlipIn', duration: 900 },
+  
+  // Phase 9: Features Section
+  { delay: 9900, id: 'featuresLabel', animation: 'buildPopIn', duration: 600 },
+  { delay: 10100, id: 'featuresTitle', animation: 'buildFromSpace', duration: 900 },
+  { delay: 10500, id: 'feature1', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 10700, id: 'feature2', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 10900, id: 'feature3', animation: 'buildSlideRotate', duration: 700 },
+  { delay: 11100, id: 'feature4', animation: 'buildSlideRotate', duration: 700 },
+  
+  // Phase 10: Footer
+  { delay: 11600, id: 'footer', animation: 'buildFadeUp', duration: 900 }
+];
+
+function buildWebsite() {
+  buildSequence.forEach(step => {
+    setTimeout(() => {
+      if (step.action) {
+        step.action();
+      } else if (step.id) {
+        const element = document.getElementById(step.id);
+        if (element) {
+          element.style.animation = `${step.animation} ${step.duration}ms cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards`;
+          element.classList.add('build-active');
+        }
       }
-    });
-  }, {threshold: 0.1});
-
-  document.querySelectorAll('.build-3d, .text-build, .slide-left, .slide-right, .pop-in, .float-up').forEach(el => {
-    observer.observe(el);
+    }, step.delay);
   });
 }
+
+// Start building on page load
+window.addEventListener('load', buildWebsite);
 
 // ============================================================
 // THREE.JS 3D ANIMATED BACKGROUND
@@ -631,13 +687,13 @@ function observeElements() {
   // === MINECRAFT BLOCKS ===
   const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
   const blockMaterials = [
-    new THREE.MeshStandardMaterial({color: 0x5D9E3F, metalness: 0.3, roughness: 0.7}), // Grass
-    new THREE.MeshStandardMaterial({color: 0x7A7A7A, metalness: 0.2, roughness: 0.8}), // Stone
-    new THREE.MeshStandardMaterial({color: 0x2E86AB, metalness: 0.6, roughness: 0.4, emissive: 0x1A6A8A, emissiveIntensity: 0.3}), // Water
-    new THREE.MeshStandardMaterial({color: 0x4FBDBA, metalness: 0.8, roughness: 0.2, emissive: 0x3A9A97, emissiveIntensity: 0.4}), // Diamond
-    new THREE.MeshStandardMaterial({color: 0xE8B84B, metalness: 0.4, roughness: 0.5, emissive: 0xC89A2E, emissiveIntensity: 0.6}), // Glowstone
-    new THREE.MeshStandardMaterial({color: 0x6B5B6E, metalness: 0.9, roughness: 0.3}), // Netherite
-    new THREE.MeshStandardMaterial({color: 0x1A0D2E, metalness: 0.7, roughness: 0.4}), // Obsidian
+    new THREE.MeshStandardMaterial({color: 0x5D9E3F, metalness: 0.3, roughness: 0.7}),
+    new THREE.MeshStandardMaterial({color: 0x7A7A7A, metalness: 0.2, roughness: 0.8}),
+    new THREE.MeshStandardMaterial({color: 0x2E86AB, metalness: 0.6, roughness: 0.4, emissive: 0x1A6A8A, emissiveIntensity: 0.3}),
+    new THREE.MeshStandardMaterial({color: 0x4FBDBA, metalness: 0.8, roughness: 0.2, emissive: 0x3A9A97, emissiveIntensity: 0.4}),
+    new THREE.MeshStandardMaterial({color: 0xE8B84B, metalness: 0.4, roughness: 0.5, emissive: 0xC89A2E, emissiveIntensity: 0.6}),
+    new THREE.MeshStandardMaterial({color: 0x6B5B6E, metalness: 0.9, roughness: 0.3}),
+    new THREE.MeshStandardMaterial({color: 0x1A0D2E, metalness: 0.7, roughness: 0.4}),
   ];
 
   const blocks = [];
@@ -668,12 +724,11 @@ function observeElements() {
     scene.add(block);
   }
 
-  // === PARTICLES (STARS/GLOWS) ===
+  // === PARTICLES ===
   const particleGeometry = new THREE.BufferGeometry();
   const particleCount = 600;
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
-  const sizes = new Float32Array(particleCount);
 
   for(let i = 0; i < particleCount * 3; i += 3){
     positions[i] = (Math.random() - 0.5) * 100;
@@ -682,39 +737,30 @@ function observeElements() {
 
     const color = new THREE.Color();
     const rand = Math.random();
-    if(rand > 0.7){
-      color.setHex(0x00C6D4); // Aqua
-    } else if(rand > 0.5){
-      color.setHex(0xFFFFFF); // White
-    } else if(rand > 0.3){
-      color.setHex(0x80DEEA); // Light cyan
-    } else {
-      color.setHex(0xFF6F00); // Orange
-    }
+    if(rand > 0.7) color.setHex(0x00C6D4);
+    else if(rand > 0.5) color.setHex(0xFFFFFF);
+    else if(rand > 0.3) color.setHex(0x80DEEA);
+    else color.setHex(0xFF6F00);
+    
     colors[i] = color.r;
     colors[i + 1] = color.g;
     colors[i + 2] = color.b;
-
-    sizes[i / 3] = Math.random() * 0.2 + 0.05;
   }
 
   particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
   const particleMaterial = new THREE.PointsMaterial({
     size: 0.18,
     vertexColors: true,
     transparent: true,
     opacity: 0.9,
-    blending: THREE.AdditiveBlending,
-    sizeAttenuation: true
+    blending: THREE.AdditiveBlending
   });
 
   const particles = new THREE.Points(particleGeometry, particleMaterial);
   scene.add(particles);
 
-  // === NEBULA FOG ===
   scene.fog = new THREE.FogExp2(0x050d1a, 0.015);
 
   // === MOUSE INTERACTION ===
@@ -730,14 +776,12 @@ function observeElements() {
   function animate(){
     requestAnimationFrame(animate);
 
-    // Smooth camera follow
     targetX += (mouseX * 3 - targetX) * 0.03;
     targetY += (mouseY * 3 - targetY) * 0.03;
     camera.position.x = targetX;
     camera.position.y = targetY;
     camera.lookAt(scene.position);
 
-    // Animate blocks with 3D rotation
     blocks.forEach(block => {
       block.position.y += block.userData.speedY;
       block.position.x += block.userData.speedX;
@@ -747,7 +791,6 @@ function observeElements() {
       block.rotation.y += block.userData.rotSpeedY;
       block.rotation.z += block.userData.rotSpeedZ;
 
-      // Reset position if out of bounds
       if(block.position.y > 30) block.position.y = -30;
       if(block.position.x > 30) block.position.x = -30;
       if(block.position.x < -30) block.position.x = 30;
@@ -755,13 +798,12 @@ function observeElements() {
       if(block.position.z < -25) block.position.z = 25;
     });
 
-    // Animate particles with wave motion
     const positions = particles.geometry.attributes.position.array;
     const time = Date.now() * 0.0001;
     
     for(let i = 0; i < positions.length; i += 3){
-      positions[i + 1] += 0.015; // Move upward
-      positions[i] += Math.sin(time + i) * 0.01; // Wave motion
+      positions[i + 1] += 0.015;
+      positions[i] += Math.sin(time + i) * 0.01;
       
       if(positions[i + 1] > 50) positions[i + 1] = -50;
       if(positions[i] > 50) positions[i] = -50;
@@ -769,11 +811,9 @@ function observeElements() {
     }
     particles.geometry.attributes.position.needsUpdate = true;
 
-    // Rotate particle system
     particles.rotation.y += 0.0003;
     particles.rotation.x += 0.0001;
 
-    // Lights orbit with different speeds
     const time2 = Date.now() * 0.0008;
     pointLight1.position.x = Math.sin(time2) * 18;
     pointLight1.position.z = Math.cos(time2) * 18;
@@ -791,7 +831,6 @@ function observeElements() {
 
   animate();
 
-  // === RESPONSIVE ===
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -871,7 +910,7 @@ function logoutUser(){
   document.getElementById('navRight').innerHTML = '<button class="nav-btn" onclick="openAuth()">My Account</button>';
 }
 
-// === CURSOR GLOW EFFECT ===
+// === CURSOR GLOW ===
 const cursorGlow = document.createElement('div');
 cursorGlow.className = 'cursor-glow';
 document.body.appendChild(cursorGlow);
