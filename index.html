@@ -1,839 +1,694 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZAIREN — Official</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AquaMC Store - 3D Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-  :root{
-    --gold:#e8c84a;
-    --gold2:#f5d97a;
-    --dark:#060810;
-    --dark2:#0c1020;
-    --mid:#111827;
-    --text:#e2e8f0;
-    --muted:#94a3b8;
-    --green:#3dff8f;
-    --cyan:#00e5ff;
-    --red:#ff4757;
-  }
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--dark);
-    color:var(--text);
-    font-family:'Rajdhani',sans-serif;
-    cursor:none;
-    overflow-x:hidden;
-  }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --aqua:#00C6D4;--aqua-dark:#0097A7;--aqua-glow:rgba(0,198,212,0.15);
+  --bg:#05080F;--card:#0C1220;--border:rgba(0,198,212,0.15);
+  --text:#E8F4F8;--muted:#5A7A95;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:#05080F;color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* CUSTOM CURSOR */
-  #cursor{
-    position:fixed;
-    width:18px;height:18px;
-    border:2px solid var(--gold);
-    border-radius:50%;
-    pointer-events:none;
-    z-index:99999;
-    transform:translate(-50%,-50%);
-    transition:width .15s,height .15s,border-color .15s,opacity .2s;
-    mix-blend-mode:normal;
-  }
-  #cursor-dot{
-    position:fixed;
-    width:5px;height:5px;
-    background:var(--gold);
-    border-radius:50%;
-    pointer-events:none;
-    z-index:99999;
-    transform:translate(-50%,-50%);
-  }
-  #cursor.hover{width:38px;height:38px;border-color:var(--cyan);background:rgba(0,229,255,0.07);}
+/* ---- 3D CANVAS BG ---- */
+#three-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 
-  /* ANIMATED BACKGROUND */
-  #canvas-bg{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-  }
+/* content */
+nav,section,.hero,.infobar,footer{position:relative;z-index:10;}
 
-  /* NAV */
-  nav{
-    position:fixed;top:0;left:0;right:0;
-    z-index:1000;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:1.1rem 4rem;
-    background:rgba(6,8,16,0.72);
-    backdrop-filter:blur(18px);
-    border-bottom:1px solid rgba(232,200,74,0.12);
-  }
-  .nav-logo{
-    font-family:'Cinzel Decorative',serif;
-    font-size:1.35rem;
-    letter-spacing:.12em;
-    color:var(--gold);
-    text-shadow:0 0 24px rgba(232,200,74,0.6);
-  }
-  .nav-links{display:flex;gap:2.2rem;}
-  .nav-links a{
-    color:var(--muted);
-    text-decoration:none;
-    font-size:.9rem;
-    font-weight:600;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    transition:color .2s;
-  }
-  .nav-links a:hover{color:var(--gold);}
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(4,8,18,0.95);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:70px;
+  box-shadow:0 4px 20px rgba(0,198,212,0.1);
+  animation:navSlideDown 0.6s ease-out;
+}
+@keyframes navSlideDown{from{transform:translateY(-100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;transition:transform 0.3s;}
+.logo:hover{transform:scale(1.05);}
+.logo-img{width:44px;height:44px;border-radius:10px;object-fit:cover;outline:2px solid rgba(0,198,212,0.55);outline-offset:2px;transition:all 0.3s;}
+.logo:hover .logo-img{outline-color:var(--aqua);box-shadow:0 0 20px rgba(0,198,212,0.4);}
+.logo-fallback{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00C6D4,#0097A7);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#05080F;outline:2px solid rgba(0,198,212,0.55);outline-offset:2px;}
+.logo-text{font-size:1.2rem;font-weight:800;color:var(--text);text-shadow:0 0 20px rgba(0,198,212,0.3);}
+.logo-text span{color:var(--aqua);}
+nav ul{list-style:none;display:flex;gap:.25rem;}
+nav ul li a{padding:8px 16px;border-radius:8px;text-decoration:none;font-size:.88rem;font-weight:600;color:var(--muted);transition:all .3s;position:relative;}
+nav ul li a::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:var(--aqua);transition:all .3s;transform:translateX(-50%);}
+nav ul li a:hover::after{width:80%;}
+nav ul li a:hover{color:var(--text);background:rgba(255,255,255,.05);transform:translateY(-2px);}
+.nav-btn{padding:10px 22px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;font-weight:700;font-size:.85rem;font-family:'Outfit',sans-serif;transition:all .3s;box-shadow:0 4px 15px rgba(0,198,212,0.3);}
+.nav-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,198,212,0.5);}
 
-  /* HERO */
-  #hero{
-    position:relative;
-    z-index:10;
-    min-height:100vh;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    text-align:center;
-    padding:6rem 2rem 4rem;
-  }
-  .hero-tag{
-    font-family:'Space Mono',monospace;
-    font-size:.72rem;
-    letter-spacing:.3em;
-    color:var(--green);
-    text-transform:uppercase;
-    margin-bottom:1.4rem;
-    opacity:.85;
-  }
-  .hero-name{
-    font-family:'Cinzel Decorative',serif;
-    font-size:clamp(3.2rem,10vw,8rem);
-    font-weight:900;
-    line-height:1;
-    background:linear-gradient(135deg,#e8c84a 0%,#f5d97a 40%,#fffbe8 60%,#c8972a 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-    filter:drop-shadow(0 0 40px rgba(232,200,74,0.35));
-    animation:shimmer 4s ease-in-out infinite;
-    background-size:200% 200%;
-  }
-  @keyframes shimmer{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-  }
-  .hero-sub{
-    font-size:clamp(1rem,2.5vw,1.35rem);
-    color:var(--muted);
-    margin-top:1.2rem;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    font-weight:500;
-  }
-  .hero-badges{
-    display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
-    margin-top:2.4rem;
-  }
-  .badge{
-    padding:.4rem 1.1rem;
-    border:1px solid rgba(232,200,74,0.35);
-    border-radius:100px;
-    font-size:.78rem;
-    font-weight:600;
-    letter-spacing:.14em;
-    color:var(--gold2);
-    background:rgba(232,200,74,0.06);
-    text-transform:uppercase;
-  }
-  .hero-scroll{
-    margin-top:3.5rem;
-    display:flex;flex-direction:column;align-items:center;gap:.5rem;
-    color:var(--muted);
-    font-size:.75rem;
-    letter-spacing:.2em;
-    text-transform:uppercase;
-  }
-  .scroll-line{
-    width:1px;height:52px;
-    background:linear-gradient(to bottom,var(--gold),transparent);
-    animation:scrollpulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollpulse{0%,100%{opacity:.3;}50%{opacity:1;}}
+/* HERO */
+.hero{text-align:center;padding:8rem 2rem 6rem;background:radial-gradient(ellipse at 50% 0%,rgba(0,198,212,0.12) 0%,transparent 70%);border-bottom:1px solid var(--border);animation:heroFadeIn 1s ease-out;}
+@keyframes heroFadeIn{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:25px;background:rgba(0,198,212,0.1);border:1px solid rgba(0,198,212,0.3);font-size:.75rem;font-weight:700;color:var(--aqua);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem;animation:badgePulse 2s infinite;box-shadow:0 0 20px rgba(0,198,212,0.2);}
+@keyframes badgePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.dot{width:6px;height:6px;border-radius:50%;background:#00C853;animation:pulse 2s infinite;display:inline-block;box-shadow:0 0 10px #00C853;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px #00C853;}50%{opacity:.4;box-shadow:0 0 20px #00C853;}}
+.hero h1{font-size:4.5rem;font-weight:900;line-height:1.05;margin-bottom:1rem;letter-spacing:-.03em;background:linear-gradient(135deg,#fff 0%,var(--aqua) 50%,#80DEEA 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:textShine 3s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(0,198,212,0.3));}
+@keyframes textShine{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}.hero h1{background-size:200% auto;}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:500px;margin:0 auto 2.5rem;line-height:1.8;animation:fadeInUp 0.8s ease-out 0.2s both;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeInUp 0.8s ease-out 0.4s both;}
+.btn-primary{padding:15px 35px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;font-weight:800;font-size:1rem;font-family:'Outfit',sans-serif;transition:all .3s;box-shadow:0 8px 25px rgba(0,198,212,.3);position:relative;overflow:hidden;}
+.btn-primary::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.3);transition:width 0.6s,height 0.6s,top 0.6s,left 0.6s;transform:translate(-50%,-50%);}
+.btn-primary:hover::before{width:300px;height:300px;}
+.btn-primary:hover{transform:translateY(-4px);box-shadow:0 12px 35px rgba(0,198,212,.5);}
+.btn-secondary{padding:15px 35px;border-radius:12px;cursor:pointer;background:rgba(255,255,255,0.03);border:2px solid var(--border);color:var(--text);font-weight:600;font-size:1rem;font-family:'Outfit',sans-serif;transition:all .3s;position:relative;overflow:hidden;}
+.btn-secondary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(0,198,212,0.1),transparent);transform:translateX(-100%);transition:transform 0.6s;}
+.btn-secondary:hover::before{transform:translateX(100%);}
+.btn-secondary:hover{border-color:var(--aqua);color:var(--aqua);background:var(--aqua-glow);transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,198,212,0.2);}
+.ip-chip{display:inline-flex;align-items:center;gap:10px;background:rgba(0,198,212,.08);border:1px solid rgba(0,198,212,.25);border-radius:10px;padding:10px 20px;margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--aqua);cursor:pointer;transition:all .3s;animation:fadeInUp 0.8s ease-out 0.6s both;box-shadow:0 4px 15px rgba(0,198,212,0.2);}
+.ip-chip:hover{background:rgba(0,198,212,.15);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,198,212,0.3);}
 
-  /* SECTION BASE */
-  section{position:relative;z-index:10;}
-  .section-inner{
-    max-width:1100px;
-    margin:0 auto;
-    padding:6rem 2rem;
-  }
-  .section-label{
-    font-family:'Space Mono',monospace;
-    font-size:.68rem;
-    letter-spacing:.35em;
-    color:var(--green);
-    text-transform:uppercase;
-    margin-bottom:.8rem;
-  }
-  .section-title{
-    font-family:'Cinzel Decorative',serif;
-    font-size:clamp(1.6rem,4vw,2.8rem);
-    color:var(--gold);
-    margin-bottom:3rem;
-    line-height:1.2;
-  }
+/* INFOBAR */
+.infobar{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;padding:1.2rem 2rem;background:rgba(8,13,26,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+.infobar-item{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);transition:transform 0.3s;}
+.infobar-item:hover{transform:scale(1.05);}
+.infobar-item strong{color:var(--text);font-weight:600;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#00C853;display:inline-block;animation:pulse 2s infinite;box-shadow:0 0 10px #00C853;}
+.dc-link{color:var(--aqua);text-decoration:none;font-weight:600;transition:all 0.3s;}
+.dc-link:hover{text-decoration:underline;text-shadow:0 0 10px rgba(0,198,212,0.5);}
 
-  /* DIVIDER */
-  .divider{
-    width:100%;max-width:1100px;
-    margin:0 auto;
-    height:1px;
-    background:linear-gradient(to right,transparent,rgba(232,200,74,0.25),transparent);
-  }
+/* SECTION */
+section{padding:5rem 2rem;position:relative;}
+.section-header{text-align:center;margin-bottom:3.5rem;animation:fadeInUp 0.8s ease-out;}
+.section-label{font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--aqua);margin-bottom:.6rem;text-shadow:0 0 10px rgba(0,198,212,0.4);}
+.section-title{font-size:2.5rem;font-weight:800;margin-bottom:.9rem;color:var(--text);letter-spacing:-.02em;text-shadow:0 0 30px rgba(0,198,212,0.2);}
+.section-sub{color:var(--muted);font-size:.95rem;max-width:450px;margin:0 auto;}
 
-  /* ABOUT */
-  .about-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:3rem;
-    align-items:center;
-  }
-  .about-avatar{
-    position:relative;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .avatar-ring{
-    width:260px;height:260px;
-    border-radius:50%;
-    border:2px solid rgba(232,200,74,0.3);
-    display:flex;align-items:center;justify-content:center;
-    position:relative;
-    animation:rotatering 20s linear infinite;
-  }
-  @keyframes rotatering{to{transform:rotate(360deg);}}
-  .avatar-ring::before{
-    content:'';
-    position:absolute;
-    inset:8px;border-radius:50%;
-    border:1px dashed rgba(232,200,74,0.18);
-  }
-  .avatar-inner{
-    width:210px;height:210px;
-    border-radius:50%;
-    background:linear-gradient(135deg,#1a2340 0%,#0d1424 100%);
-    border:2px solid rgba(232,200,74,0.5);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Cinzel Decorative',serif;
-    font-size:4rem;
-    color:var(--gold);
-    text-shadow:0 0 30px rgba(232,200,74,0.8);
-    transform:rotate(0deg);
-    animation:counterrot 20s linear infinite;
-  }
-  @keyframes counterrot{to{transform:rotate(-360deg);}}
-  .about-text p{
-    font-size:1.05rem;
-    line-height:1.85;
-    color:var(--muted);
-    margin-bottom:1.2rem;
-  }
-  .about-text p span{color:var(--gold2);font-weight:600;}
-  .stats-row{
-    display:flex;gap:2rem;margin-top:2rem;flex-wrap:wrap;
-  }
-  .stat{
-    text-align:center;
-  }
-  .stat-num{
-    font-family:'Cinzel Decorative',serif;
-    font-size:1.8rem;
-    color:var(--gold);
-  }
-  .stat-lbl{
-    font-size:.78rem;
-    color:var(--muted);
-    letter-spacing:.15em;
-    text-transform:uppercase;
-  }
+/* RANKS */
+.ranks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto;}
+.rank-card{background:rgba(12,18,32,.95);backdrop-filter:blur(15px);border-radius:20px;padding:2rem 1.75rem;border:1px solid var(--border);position:relative;overflow:hidden;transition:all .4s;cursor:pointer;animation:cardFadeIn 0.6s ease-out both;}
+.rank-card:nth-child(1){animation-delay:0.1s;}
+.rank-card:nth-child(2){animation-delay:0.2s;}
+.rank-card:nth-child(3){animation-delay:0.3s;}
+.rank-card:nth-child(4){animation-delay:0.4s;}
+.rank-card:nth-child(5){animation-delay:0.5s;}
+@keyframes cardFadeIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.rank-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--rank-color);box-shadow:0 0 15px var(--rank-color);}
+.rank-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--rank-glow) 0%,transparent 65%);opacity:0;transition:opacity .4s;pointer-events:none;}
+.rank-card:hover{transform:translateY(-10px) scale(1.02);border-color:var(--rank-color);box-shadow:0 15px 40px rgba(0,0,0,0.4),0 0 30px var(--rank-glow);}
+.rank-card:hover::after{opacity:1;}
+.rank-badge-pop{position:absolute;top:16px;right:16px;background:var(--aqua);color:#05080F;font-size:.65rem;font-weight:800;letter-spacing:.08em;padding:4px 10px;border-radius:20px;text-transform:uppercase;box-shadow:0 4px 15px rgba(0,198,212,0.4);animation:badgeBounce 2s infinite;}
+@keyframes badgeBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.rank-emoji{font-size:2.5rem;margin-bottom:1rem;display:block;animation:emojiFloat 3s ease-in-out infinite;}
+@keyframes emojiFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.rank-name{font-size:1.15rem;font-weight:800;margin-bottom:.3rem;color:var(--rank-color);letter-spacing:.03em;text-transform:uppercase;text-shadow:0 0 15px var(--rank-glow);}
+.rank-desc{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.rank-price{font-size:1.9rem;font-weight:900;color:var(--text);margin-bottom:.3rem;font-family:'JetBrains Mono',monospace;text-shadow:0 0 20px rgba(255,255,255,0.2);}
+.rank-price-unit{font-size:.8rem;color:var(--muted);margin-bottom:1.2rem;}
+.rank-perks{list-style:none;margin:0 0 1.75rem;display:flex;flex-direction:column;gap:6px;}
+.rank-perks li{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:8px;transition:transform 0.3s;}
+.rank-card:hover .rank-perks li{transform:translateX(5px);}
+.rank-perks li::before{content:'✦';color:var(--rank-color);font-size:.7rem;text-shadow:0 0 10px var(--rank-color);}
+.rank-buy-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--rank-color);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;background:rgba(255,255,255,.04);color:var(--rank-color);transition:all .3s;position:relative;overflow:hidden;}
+.rank-buy-btn::before{content:'';position:absolute;inset:0;background:var(--rank-color);transform:scaleX(0);transition:transform 0.3s;transform-origin:left;z-index:-1;}
+.rank-buy-btn:hover::before,.rank-buy-btn.featured-btn::before{transform:scaleX(1);}
+.rank-buy-btn:hover,.rank-buy-btn.featured-btn{background:var(--rank-color);color:#05080F;box-shadow:0 8px 25px var(--rank-glow);}
 
-  /* SOCIAL */
-  .social-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:1.4rem;
-  }
-  .social-card{
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.07);
-    border-radius:16px;
-    padding:1.8rem 1.6rem;
-    transition:transform .25s,border-color .25s,background .25s;
-    text-decoration:none;
-    display:block;
-    position:relative;
-    overflow:hidden;
-  }
-  .social-card::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    opacity:0;
-    transition:opacity .3s;
-    border-radius:16px;
-  }
-  .social-card.yt::before{background:linear-gradient(135deg,rgba(255,0,0,0.08),transparent);}
-  .social-card.dc::before{background:linear-gradient(135deg,rgba(88,101,242,0.1),transparent);}
-  .social-card.tw::before{background:linear-gradient(135deg,rgba(29,161,242,0.08),transparent);}
-  .social-card.tk::before{background:linear-gradient(135deg,rgba(0,229,255,0.08),transparent);}
-  .social-card.ig::before{background:linear-gradient(135deg,rgba(225,48,108,0.08),transparent);}
-  .social-card:hover{transform:translateY(-6px);border-color:rgba(232,200,74,0.3);}
-  .social-card:hover::before{opacity:1;}
-  .social-icon{
-    font-size:2.2rem;
-    margin-bottom:1rem;
-    display:block;
-  }
-  .social-name{
-    font-family:'Cinzel Decorative',serif;
-    font-size:.95rem;
-    color:var(--gold);
-    margin-bottom:.3rem;
-  }
-  .social-handle{
-    font-size:.85rem;
-    color:var(--muted);
-    font-family:'Space Mono',monospace;
-  }
-  .social-followers{
-    font-size:.8rem;
-    color:var(--green);
-    font-weight:600;
-    margin-top:.6rem;
-    letter-spacing:.1em;
-  }
+/* CRATES */
+.crates-section{background:rgba(6,10,20,.6);}
+.crates-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.75rem;max-width:1200px;margin:0 auto;}
+.crate-card{background:rgba(12,18,32,.95);backdrop-filter:blur(15px);border-radius:20px;overflow:hidden;border:1px solid var(--border);transition:all .4s;cursor:pointer;position:relative;animation:cardFadeIn 0.6s ease-out both;}
+.crate-card:nth-child(1){animation-delay:0.1s;}
+.crate-card:nth-child(2){animation-delay:0.2s;}
+.crate-card:nth-child(3){animation-delay:0.3s;}
+.crate-card:nth-child(4){animation-delay:0.4s;}
+.crate-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--crate-glow) 0%,transparent 65%);opacity:0;transition:opacity .4s;pointer-events:none;}
+.crate-card:hover{transform:translateY(-10px) scale(1.02);border-color:var(--crate-color);box-shadow:0 15px 40px rgba(0,0,0,0.4),0 0 30px var(--crate-glow);}
+.crate-card:hover::after{opacity:1;}
+.crate-header{padding:2.25rem 1.75rem 1.75rem;text-align:center;border-bottom:1px solid var(--border);background:radial-gradient(circle at 50% 0%,var(--crate-glow),transparent 80%);}
+.crate-icon-wrap{width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,.05);border:3px solid var(--crate-color);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 1.2rem;animation:crateRotate 4s ease-in-out infinite;box-shadow:0 0 30px var(--crate-glow);}
+@keyframes crateRotate{0%,100%{transform:rotateY(0deg) rotateZ(0deg);box-shadow:0 0 30px var(--crate-glow);}25%{transform:rotateY(10deg) rotateZ(2deg);}50%{transform:rotateY(0deg) rotateZ(0deg);box-shadow:0 0 50px var(--crate-glow);}75%{transform:rotateY(-10deg) rotateZ(-2deg);}}
+.crate-name{font-size:1.2rem;font-weight:800;color:var(--crate-color);text-transform:uppercase;letter-spacing:.05em;text-shadow:0 0 20px var(--crate-glow);}
+.crate-subtitle{font-size:.8rem;color:var(--muted);margin-top:5px;}
+.crate-body{padding:1.5rem 1.75rem 1.75rem;position:relative;z-index:1;}
+.crate-items{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem;}
+.crate-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.04);font-size:.82rem;transition:all 0.3s;border:1px solid transparent;}
+.crate-card:hover .crate-item{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08);}
+.crate-item-name{color:var(--text);}
+.crate-item-chance{font-size:.72rem;font-weight:700;color:var(--crate-color);font-family:'JetBrains Mono',monospace;text-shadow:0 0 10px var(--crate-glow);}
+.crate-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1.2rem 0;}
+.crate-key-price{display:flex;align-items:center;justify-content:space-between;}
+.key-info{font-size:.82rem;color:var(--muted);}
+.key-price{font-size:1.5rem;font-weight:900;color:var(--text);font-family:'JetBrains Mono',monospace;text-shadow:0 0 15px rgba(255,255,255,0.2);}
+.crate-buy-btn{width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;background:var(--crate-color);color:#05080F;transition:all .3s;margin-top:1.2rem;box-shadow:0 6px 20px var(--crate-glow);position:relative;overflow:hidden;}
+.crate-buy-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.3);border-radius:50%;transition:width 0.6s,height 0.6s,top 0.6s,left 0.6s;transform:translate(-50%,-50%);}
+.crate-buy-btn:hover::before{width:300px;height:300px;}
+.crate-buy-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px var(--crate-glow);}
 
-  /* MINECRAFT TABS */
-  .mc-tabs{
-    display:flex;gap:.6rem;flex-wrap:wrap;
-    margin-bottom:2.5rem;
-  }
-  .mc-tab{
-    padding:.45rem 1.2rem;
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:8px;
-    font-size:.82rem;
-    font-weight:600;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--muted);
-    background:transparent;
-    cursor:none;
-    transition:all .2s;
-  }
-  .mc-tab.active,.mc-tab:hover{
-    border-color:var(--gold);
-    color:var(--gold);
-    background:rgba(232,200,74,0.07);
-  }
-  .mc-panel{display:none;}
-  .mc-panel.active{display:grid;}
-  .mc-grid{
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-    gap:1.2rem;
-  }
-  .mc-card{
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.07);
-    border-radius:12px;
-    padding:1.4rem 1.3rem;
-    transition:border-color .2s,transform .2s;
-    position:relative;
-    overflow:hidden;
-  }
-  .mc-card::after{
-    content:'';
-    position:absolute;
-    top:0;left:0;right:0;
-    height:2px;
-    background:linear-gradient(to right,var(--green),var(--cyan));
-    opacity:0;
-    transition:opacity .2s;
-  }
-  .mc-card:hover{border-color:rgba(61,255,143,0.3);transform:translateY(-4px);}
-  .mc-card:hover::after{opacity:1;}
-  .mc-card-title{
-    font-family:'Rajdhani',sans-serif;
-    font-size:1.05rem;
-    font-weight:700;
-    color:var(--text);
-    margin-bottom:.3rem;
-    display:flex;align-items:center;gap:.5rem;
-  }
-  .mc-dot{
-    width:8px;height:8px;border-radius:50%;
-    background:var(--green);
-    box-shadow:0 0 8px var(--green);
-    flex-shrink:0;
-  }
-  .mc-dot.plugin{background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
-  .mc-dot.server{background:var(--gold);box-shadow:0 0 8px var(--gold);}
-  .mc-card-desc{
-    font-size:.88rem;
-    color:var(--muted);
-    line-height:1.6;
-    margin-bottom:.8rem;
-  }
-  .mc-tag{
-    display:inline-block;
-    padding:.2rem .7rem;
-    border-radius:100px;
-    font-size:.72rem;
-    font-weight:600;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-  }
-  .mc-tag.mod{background:rgba(61,255,143,0.12);color:var(--green);}
-  .mc-tag.plugin{background:rgba(0,229,255,0.12);color:var(--cyan);}
-  .mc-tag.server{background:rgba(232,200,74,0.12);color:var(--gold2);}
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;max-width:950px;margin:0 auto;}
+.feature-card{background:rgba(12,18,32,.95);backdrop-filter:blur(15px);border-radius:16px;padding:1.5rem;border:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;transition:all 0.3s;animation:cardFadeIn 0.6s ease-out both;}
+.feature-card:nth-child(1){animation-delay:0.1s;}
+.feature-card:nth-child(2){animation-delay:0.2s;}
+.feature-card:nth-child(3){animation-delay:0.3s;}
+.feature-card:nth-child(4){animation-delay:0.4s;}
+.feature-card:hover{transform:translateY(-5px);border-color:rgba(0,198,212,0.3);box-shadow:0 10px 30px rgba(0,198,212,0.15);}
+.feature-icon{width:42px;height:42px;border-radius:12px;flex-shrink:0;background:var(--aqua-glow);border:1px solid rgba(0,198,212,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all 0.3s;}
+.feature-card:hover .feature-icon{transform:scale(1.1) rotate(5deg);box-shadow:0 0 20px rgba(0,198,212,0.4);}
+.feature-title{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:5px;}
+.feature-desc{font-size:.8rem;color:var(--muted);line-height:1.6;}
 
-  /* CONTACT / FOOTER */
-  #contact{
-    background:linear-gradient(to bottom,transparent,rgba(232,200,74,0.04));
-  }
-  .contact-inner{
-    text-align:center;
-    max-width:600px;
-    margin:0 auto;
-    padding:6rem 2rem 5rem;
-  }
-  .contact-inner p{
-    font-size:1.05rem;
-    color:var(--muted);
-    line-height:1.8;
-    margin-bottom:2.5rem;
-  }
-  .cta-btn{
-    display:inline-block;
-    padding:.85rem 2.8rem;
-    background:linear-gradient(135deg,var(--gold),#c8972a);
-    color:#0a0600;
-    font-family:'Rajdhani',sans-serif;
-    font-size:1rem;
-    font-weight:700;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    text-decoration:none;
-    border-radius:8px;
-    transition:filter .2s,transform .2s;
-  }
-  .cta-btn:hover{filter:brightness(1.15);transform:scale(1.04);}
-  footer{
-    border-top:1px solid rgba(232,200,74,0.1);
-    padding:2rem;
-    text-align:center;
-    font-size:.78rem;
-    color:rgba(148,163,184,0.4);
-    font-family:'Space Mono',monospace;
-    letter-spacing:.1em;
-    position:relative;z-index:10;
-  }
+/* FOOTER */
+footer{background:rgba(4,6,14,.98);border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center;}
+.footer-logo{font-size:1.4rem;font-weight:800;margin-bottom:.6rem;text-shadow:0 0 20px rgba(0,198,212,0.3);}
+.footer-logo span{color:var(--aqua);}
+footer p{font-size:.82rem;color:var(--muted);}
+.footer-links{display:flex;justify-content:center;gap:2rem;margin:1.2rem 0;flex-wrap:wrap;}
+.footer-links a{font-size:.82rem;color:var(--muted);text-decoration:none;transition:all .3s;position:relative;}
+.footer-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--aqua);transition:width 0.3s;}
+.footer-links a:hover::after{width:100%;}
+.footer-links a:hover{color:var(--aqua);text-shadow:0 0 10px rgba(0,198,212,0.5);}
 
-  /* PARTICLES FLOATING BLOCKS ANIMATION */
-  .mc-block{
-    position:fixed;
-    width:16px;height:16px;
-    opacity:.12;
-    animation:floatblock linear infinite;
-    pointer-events:none;
-    z-index:1;
-    image-rendering:pixelated;
-  }
-  @keyframes floatblock{
-    0%{transform:translateY(110vh) rotate(0deg);}
-    100%{transform:translateY(-10vh) rotate(360deg);}
-  }
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:1rem;animation:overlayFadeIn 0.3s ease-out;}
+@keyframes overlayFadeIn{from{opacity:0;}to{opacity:1;}}
+.overlay.active{display:flex;}
+.modal{background:#0C1220;border:1px solid var(--border);border-radius:24px;padding:3rem;max-width:460px;width:100%;position:relative;animation:modalIn .3s ease;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 40px rgba(0,198,212,0.1);}
+@keyframes modalIn{from{opacity:0;transform:translateY(40px) scale(0.9);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-close{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;background:rgba(255,255,255,.08);color:var(--muted);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.modal-close:hover{background:rgba(255,255,255,.15);color:var(--text);transform:rotate(90deg);}
+.modal-icon{font-size:3.5rem;margin-bottom:1.2rem;text-align:center;animation:emojiFloat 3s ease-in-out infinite;}
+.modal-title{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:.5rem;text-align:center;}
+.modal-sub{font-size:.9rem;color:var(--muted);text-align:center;margin-bottom:1.75rem;line-height:1.7;}
+.modal-item-name{text-align:center;padding:12px 18px;border-radius:12px;background:rgba(0,198,212,.1);border:1px solid rgba(0,198,212,.25);font-weight:700;color:var(--aqua);font-size:1.05rem;margin-bottom:1.75rem;font-family:'JetBrains Mono',monospace;box-shadow:0 4px 15px rgba(0,198,212,0.2);}
+.dc-modal-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:16px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;text-decoration:none;transition:all .3s;box-shadow:0 8px 25px rgba(88,101,242,0.3);position:relative;overflow:hidden;}
+.dc-modal-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.2);border-radius:50%;transition:width 0.6s,height 0.6s,top 0.6s,left 0.6s;transform:translate(-50%,-50%);}
+.dc-modal-btn:hover::before{width:300px;height:300px;}
+.dc-modal-btn:hover{transform:translateY(-3px);box-shadow:0 12px 35px rgba(88,101,242,0.5);}
+.modal-note{font-size:.8rem;color:var(--muted);text-align:center;margin-top:1.2rem;line-height:1.7;}
+.auth-tabs{display:flex;border-radius:12px;background:rgba(255,255,255,.05);padding:5px;gap:5px;margin-bottom:1.75rem;}
+.auth-tab{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;background:transparent;color:var(--muted);transition:all .3s;}
+.auth-tab.active{background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;box-shadow:0 4px 15px rgba(0,198,212,0.3);}
+.auth-form{display:flex;flex-direction:column;gap:14px;}
+.auth-form label{font-size:.8rem;color:var(--muted);margin-bottom:3px;display:block;}
+.auth-form input{width:100%;padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.95rem;outline:none;transition:all .3s;}
+.auth-form input:focus{border-color:var(--aqua);background:rgba(255,255,255,.08);box-shadow:0 0 20px rgba(0,198,212,0.2);}
+.auth-form input::placeholder{color:var(--muted);}
+.auth-submit{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));color:#05080F;font-family:'Outfit',sans-serif;font-weight:800;font-size:1rem;margin-top:5px;transition:all .3s;box-shadow:0 6px 20px rgba(0,198,212,0.3);}
+.auth-submit:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,198,212,0.5);}
+.auth-divider{text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0;}
+.auth-success{text-align:center;padding:1.5rem;border-radius:14px;font-weight:600;font-size:.9rem;display:none;margin-top:14px;}
+.user-chip{display:flex;align-items:center;gap:10px;background:rgba(0,198,212,.12);border:1px solid rgba(0,198,212,.3);border-radius:10px;padding:7px 14px;cursor:pointer;transition:all .3s;box-shadow:0 4px 15px rgba(0,198,212,0.2);}
+.user-chip:hover{background:rgba(0,198,212,.2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,198,212,0.3);}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--aqua),var(--aqua-dark));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#05080F;box-shadow:0 0 15px rgba(0,198,212,0.4);}
+.user-name{font-size:.88rem;font-weight:700;color:var(--aqua);text-shadow:0 0 10px rgba(0,198,212,0.4);}
 
-  /* GLOW ORBS */
-  .orb{
-    position:fixed;
-    border-radius:50%;
-    pointer-events:none;
-    filter:blur(90px);
-    z-index:1;
-    opacity:.22;
-  }
-  .orb1{width:600px;height:600px;background:#3dff8f;top:-200px;left:-200px;animation:driftorb 18s ease-in-out infinite;}
-  .orb2{width:500px;height:500px;background:#e8c84a;bottom:-200px;right:-200px;animation:driftorb2 22s ease-in-out infinite;}
-  .orb3{width:400px;height:400px;background:#00e5ff;top:40%;left:30%;animation:driftorb3 28s ease-in-out infinite;}
-  @keyframes driftorb{0%,100%{transform:translate(0,0);}50%{transform:translate(80px,60px);}}
-  @keyframes driftorb2{0%,100%{transform:translate(0,0);}50%{transform:translate(-60px,-80px);}}
-  @keyframes driftorb3{0%,100%{transform:translate(0,0);}33%{transform:translate(50px,-50px);}66%{transform:translate(-40px,40px);}}
-
-  @media(max-width:768px){
-    nav{padding:1rem 1.5rem;}
-    .nav-links{gap:1.2rem;}
-    .about-grid{grid-template-columns:1fr;}
-    .avatar-ring{width:180px;height:180px;}
-    .avatar-inner{width:140px;height:140px;font-size:2.8rem;}
-  }
+/* 3D CURSOR TRAIL */
+.cursor-glow{position:fixed;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,rgba(0,198,212,0.6),transparent);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);animation:cursorPulse 1s infinite;mix-blend-mode:screen;}
+@keyframes cursorPulse{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.5);opacity:0.5;}}
 </style>
 </head>
 <body>
 
-<!-- Cursor -->
-<div id="cursor"></div>
-<div id="cursor-dot"></div>
-
-<!-- Glow Orbs -->
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
-
-<!-- Minecraft floating blocks -->
-<canvas id="canvas-bg"></canvas>
+<canvas id="three-canvas"></canvas>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">ZAIREN</div>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#social">Socials</a>
-    <a href="#minecraft">Minecraft</a>
-    <a href="#contact">Contact</a>
-  </div>
+  <a href="#" class="logo">
+    <img src="logo.png" class="logo-img" alt="AquaMC" onerror="this.style.display='none';document.getElementById('lf').style.display='flex'"/>
+    <div id="lf" class="logo-fallback" style="display:none;">AM</div>
+    <span class="logo-text">Aqua<span>MC</span></span>
+  </a>
+  <ul>
+    <li><a href="#ranks">Ranks</a></li>
+    <li><a href="#crates">Crates</a></li>
+    <li><a href="#features">Info</a></li>
+  </ul>
+  <div id="navRight"><button class="nav-btn" onclick="openAuth()">My Account</button></div>
 </nav>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="hero-tag">⚡ Content Creator &amp; Minecraft Enthusiast</div>
-  <h1 class="hero-name">ZAIREN</h1>
-  <p class="hero-sub">YouTuber · Builder · Modder</p>
-  <div class="hero-badges">
-    <span class="badge">🎮 Minecraft</span>
-    <span class="badge">📺 YouTube</span>
-    <span class="badge">🔧 Modder</span>
-    <span class="badge">🌐 Community</span>
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> Server Online · 1.21.11</div>
+  <h1>AquaMC Store</h1>
+  <p>Unlock legendary ranks, deadly crates & ultimate power on the best Lifesteal server.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.getElementById('ranks').scrollIntoView({behavior:'smooth'})">Browse Ranks</button>
+    <button class="btn-secondary" onclick="document.getElementById('crates').scrollIntoView({behavior:'smooth'})">Open Crates</button>
   </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>Scroll</span>
+  <div class="ip-chip" onclick="copyIP()">⚡ aquamc.hidenplay.net · click to copy</div>
+</div>
+
+<!-- INFOBAR -->
+<div class="infobar">
+  <div class="infobar-item"><span class="status-dot"></span><strong>Online</strong></div>
+  <div class="infobar-item">Players: <strong>128 / 500</strong></div>
+  <div class="infobar-item">Version: <strong>1.21.11</strong></div>
+  <div class="infobar-item">Mode: <strong>Lifesteal</strong></div>
+  <div class="infobar-item">Discord: <a class="dc-link" href="https://discord.gg/yNaWs5ypnh" target="_blank">discord.gg/yNaWs5ypnh</a></div>
+</div>
+
+<!-- RANKS -->
+<section id="ranks">
+  <div class="section-header">
+    <div class="section-label">Ranks</div>
+    <div class="section-title">Choose Your Power</div>
+    <div class="section-sub">Channel anime legends and dominate the Lifesteal server.</div>
+  </div>
+  <div class="ranks-grid">
+    <div class="rank-card" style="--rank-color:#ECEFF1;--rank-glow:rgba(236,239,241,0.1);">
+      <span class="rank-emoji">💀</span>
+      <div class="rank-name">Shinigami</div>
+      <div class="rank-desc">Reap souls as the God of Death himself.</div>
+      <div class="rank-price">200৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
+      <ul class="rank-perks"><li>1 Home Location</li><li>Color Chat</li><li>Kit Shinigami</li><li>[SHINIGAMI] prefix</li></ul>
+      <button class="rank-buy-btn" onclick="openBuy('SHINIGAMI Rank','200৳','💀')">Buy Now</button>
+    </div>
+    <div class="rank-card" style="--rank-color:#00BCD4;--rank-glow:rgba(0,188,212,0.15);">
+      <span class="rank-emoji">👁️</span>
+      <div class="rank-name">Ghoul</div>
+      <div class="rank-desc">Devour your enemies like a full-powered Ghoul.</div>
+      <div class="rank-price">300৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
+      <ul class="rank-perks"><li>3 Home Locations</li><li>Color Chat</li><li>Kit Ghoul</li><li>[GHOUL] prefix</li><li>Speed Boost Perk</li></ul>
+      <button class="rank-buy-btn" onclick="openBuy('GHOUL Rank','300৳','👁️')">Buy Now</button>
+    </div>
+    <div class="rank-card" style="--rank-color:#FF6F00;--rank-glow:rgba(255,111,0,0.15);">
+      <span class="rank-emoji">⚡</span>
+      <div class="rank-name">Special Grade</div>
+      <div class="rank-desc">Wield Jujutsu power as a Special Grade Sorcerer.</div>
+      <div class="rank-price">400৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
+      <ul class="rank-perks"><li>6 Home Locations</li><li>Full Chat Format</li><li>Kit Special Grade</li><li>[SP.GRADE] prefix</li><li>Fly Access</li><li>Custom Join Message</li></ul>
+      <button class="rank-buy-btn" onclick="openBuy('SPECIAL GRADE Rank','400৳','⚡')">Buy Now</button>
+    </div>
+    <div class="rank-card" style="--rank-color:#9C27B0;--rank-glow:rgba(156,39,176,0.15);">
+      <span class="rank-emoji">🐉</span>
+      <div class="rank-name">Saiyan</div>
+      <div class="rank-desc">Transform beyond limits like a true Super Saiyan.</div>
+      <div class="rank-price">500৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
+      <ul class="rank-perks"><li>5 Home Locations</li><li>Color Chat</li><li>Kit Saiyan</li><li>[SAIYAN] prefix</li><li>Fly in Spawn</li></ul>
+      <button class="rank-buy-btn" onclick="openBuy('SAIYAN Rank','500৳','🐉')">Buy Now</button>
+    </div>
+    <div class="rank-card" style="--rank-color:#E53935;--rank-glow:rgba(229,57,53,0.15);">
+      <div class="rank-badge-pop">TOP RANK</div>
+      <span class="rank-emoji">🔴</span>
+      <div class="rank-name">Akatsuki</div>
+      <div class="rank-desc">Join the most feared organization in the ninja world.</div>
+      <div class="rank-price">600৳</div>
+      <div class="rank-price-unit">one-time · BDT</div>
+      <ul class="rank-perks"><li>8 Home Locations</li><li>Format Chat</li><li>Kit Akatsuki</li><li>[AKATSUKI] prefix</li><li>Fly in Survival</li><li>1 Crate Key/week</li></ul>
+      <button class="rank-buy-btn featured-btn" onclick="openBuy('AKATSUKI Rank','600৳','🔴')">Buy Now</button>
+    </div>
   </div>
 </section>
 
-<!-- DIVIDER -->
-<div class="divider"></div>
-
-<!-- ABOUT -->
-<section id="about">
-  <div class="section-inner">
-    <div class="about-grid">
-      <div class="about-avatar">
-        <div class="avatar-ring">
-          <div class="avatar-inner">Z</div>
+<!-- CRATES -->
+<section id="crates" class="crates-section">
+  <div class="section-header">
+    <div class="section-label">Crates</div>
+    <div class="section-title">Unlock the Crates</div>
+    <div class="section-sub">Spin for rare loot, gear, and exclusive rewards hidden inside each crate.</div>
+  </div>
+  <div class="crates-grid">
+    <div class="crate-card" style="--crate-color:#00C6D4;--crate-glow:rgba(0,198,212,0.25);">
+      <div class="crate-header"><div class="crate-icon-wrap">🏆</div><div class="crate-name">Champion</div><div class="crate-subtitle">Rise above the rest</div></div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Iron Sword (Sharp III)</span><span class="crate-item-chance">35%</span></div>
+          <div class="crate-item"><span class="crate-item-name">64x Golden Apple</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">5,000৳ In-Game</span><span class="crate-item-chance">25%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Kit Voucher</span><span class="crate-item-chance">10%</span></div>
         </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">40৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Champion Crate Key','40৳','🏆')">Buy Key</button>
       </div>
-      <div class="about-text">
-        <div class="section-label">// Who is ZAIREN</div>
-        <h2 class="section-title">The Story</h2>
-        <p>Hey! I'm <span>ZAIREN</span> — a passionate content creator dedicated to bringing the best Minecraft content to the internet. From epic builds and survival adventures to deep dives into mods and plugins, I cover it all.</p>
-        <p>I've been playing <span>Minecraft</span> since the early days and started my YouTube journey to share my love for this incredible game. My content ranges from <span>modpack reviews</span> and <span>plugin showcases</span> to full <span>SMP series</span> and tutorials.</p>
-        <p>I also run a <span>community Discord server</span> where my fans can join events, get early access to content, and hang out with fellow Minecraft lovers.</p>
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-num">50K+</div>
-            <div class="stat-lbl">Subscribers</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num">200+</div>
-            <div class="stat-lbl">Videos</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num">5M+</div>
-            <div class="stat-lbl">Total Views</div>
-          </div>
-          <div class="stat">
-            <div class="stat-num">3+</div>
-            <div class="stat-lbl">Years Active</div>
-          </div>
+    </div>
+    <div class="crate-card" style="--crate-color:#F57F17;--crate-glow:rgba(245,127,23,0.25);">
+      <div class="crate-header"><div class="crate-icon-wrap">🏅</div><div class="crate-name">Elite</div><div class="crate-subtitle">Top-tier rewards</div></div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Diamond Armor (Prot IV)</span><span class="crate-item-chance">25%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Enchanted Books (Max)</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">10,000৳ In-Game</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">7-Day Fly Boost</span><span class="crate-item-chance">15%</span></div>
         </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">60৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Elite Crate Key','60৳','🏅')">Buy Key</button>
+      </div>
+    </div>
+    <div class="crate-card" style="--crate-color:#7B1FA2;--crate-glow:rgba(123,31,162,0.25);">
+      <div class="crate-header"><div class="crate-icon-wrap">♾️</div><div class="crate-name">Immortal</div><div class="crate-subtitle">Endless power awaits</div></div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Netherite Sword (Sharp V)</span><span class="crate-item-chance">20%</span></div>
+          <div class="crate-item"><span class="crate-item-name">30-Day Fly Access</span><span class="crate-item-chance">15%</span></div>
+          <div class="crate-item"><span class="crate-item-name">25,000৳ In-Game</span><span class="crate-item-chance">35%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Custom Particle Trail</span><span class="crate-item-chance">30%</span></div>
+        </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">80৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Immortal Crate Key','80৳','♾️')">Buy Key</button>
+      </div>
+    </div>
+    <div class="crate-card" style="--crate-color:#B71C1C;--crate-glow:rgba(183,28,28,0.25);">
+      <div class="crate-header"><div class="crate-icon-wrap">☠️</div><div class="crate-name">Deadliest</div><div class="crate-subtitle">Supreme power inside</div></div>
+      <div class="crate-body">
+        <div class="crate-items">
+          <div class="crate-item"><span class="crate-item-name">Full Netherite Set (God)</span><span class="crate-item-chance">10%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Rank Upgrade (Any)</span><span class="crate-item-chance">15%</span></div>
+          <div class="crate-item"><span class="crate-item-name">50,000৳ In-Game</span><span class="crate-item-chance">30%</span></div>
+          <div class="crate-item"><span class="crate-item-name">Exclusive Death Tag</span><span class="crate-item-chance">45%</span></div>
+        </div>
+        <div class="crate-divider"></div>
+        <div class="crate-key-price"><div class="key-info">1 Key</div><div class="key-price">100৳</div></div>
+        <button class="crate-buy-btn" onclick="openBuy('Deadliest Crate Key','100৳','☠️')">Buy Key</button>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- SOCIAL -->
-<section id="social">
-  <div class="section-inner">
-    <div class="section-label">// Find Me Online</div>
-    <h2 class="section-title">Socials</h2>
-    <div class="social-grid">
-      <a href="https://youtube.com/@ZAIREN" class="social-card yt" target="_blank">
-        <span class="social-icon">▶️</span>
-        <div class="social-name">YouTube</div>
-        <div class="social-handle">@ZAIREN</div>
-        <div class="social-followers">50K+ Subscribers</div>
-      </a>
-      <a href="https://discord.gg/zairen" class="social-card dc" target="_blank">
-        <span class="social-icon">💬</span>
-        <div class="social-name">Discord</div>
-        <div class="social-handle">discord.gg/zairen</div>
-        <div class="social-followers">Community Server</div>
-      </a>
-      <a href="https://twitter.com/ZAIREN" class="social-card tw" target="_blank">
-        <span class="social-icon">🐦</span>
-        <div class="social-name">Twitter / X</div>
-        <div class="social-handle">@ZAIREN</div>
-        <div class="social-followers">Updates &amp; News</div>
-      </a>
-      <a href="https://tiktok.com/@zairen" class="social-card tk" target="_blank">
-        <span class="social-icon">🎵</span>
-        <div class="social-name">TikTok</div>
-        <div class="social-handle">@zairen</div>
-        <div class="social-followers">Short Clips</div>
-      </a>
-      <a href="https://instagram.com/zairen" class="social-card ig" target="_blank">
-        <span class="social-icon">📸</span>
-        <div class="social-name">Instagram</div>
-        <div class="social-handle">@zairen</div>
-        <div class="social-followers">Behind the Scenes</div>
-      </a>
-    </div>
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-header">
+    <div class="section-label">Why AquaMC?</div>
+    <div class="section-title">Server Highlights</div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">⚡</div><div><div class="feature-title">Instant Delivery</div><div class="feature-desc">Perks applied the moment your payment is confirmed.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">🔒</div><div><div class="feature-title">Secure Payments</div><div class="feature-desc">Safe transactions handled via our Discord staff.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">🎮</div><div><div class="feature-title">Lifesteal Mode</div><div class="feature-desc">Steal hearts. Dominate. Survive at all costs.</div></div></div>
+    <div class="feature-card"><div class="feature-icon">💬</div><div><div class="feature-title">24/7 Support</div><div class="feature-desc">Open a ticket on Discord — we respond fast.</div></div></div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- MINECRAFT -->
-<section id="minecraft">
-  <div class="section-inner">
-    <div class="section-label">// Minecraft Content</div>
-    <h2 class="section-title">Mods &amp; Plugins</h2>
-
-    <div class="mc-tabs">
-      <button class="mc-tab active" onclick="switchTab('mods')">Favourite Mods</button>
-      <button class="mc-tab" onclick="switchTab('plugins')">Top Plugins</button>
-      <button class="mc-tab" onclick="switchTab('servers')">Server Info</button>
-    </div>
-
-    <!-- MODS -->
-    <div class="mc-panel active mc-grid" id="tab-mods">
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Create Mod</div>
-        <div class="mc-card-desc">My all-time favourite. Automation, contraptions, and insane machines — Create makes every build feel alive.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Biomes O' Plenty</div>
-        <div class="mc-card-desc">Adds 80+ new biomes with unique plants, trees, and terrain. Every world feels brand new.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Twilight Forest</div>
-        <div class="mc-card-desc">A magical dimension full of bosses, dungeons, and adventure. One of the best adventure mods ever made.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Applied Energistics 2</div>
-        <div class="mc-card-desc">Digital storage and autocrafting taken to the extreme. Essential for any tech modpack.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Botania</div>
-        <div class="mc-card-desc">Magic through flowers and nature. Elegant design with deep gameplay — a true masterpiece mod.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot"></div>Sodium + Iris</div>
-        <div class="mc-card-desc">Game-changing performance. With shaders, Minecraft looks unreal. This combo is non-negotiable.</div>
-        <span class="mc-tag mod">Mod</span>
-      </div>
-    </div>
-
-    <!-- PLUGINS -->
-    <div class="mc-panel mc-grid" id="tab-plugins">
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>EssentialsX</div>
-        <div class="mc-card-desc">The foundation of any server. Warps, homes, economy, player management — does everything out of the box.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>LuckPerms</div>
-        <div class="mc-card-desc">The best permissions manager, period. Granular rank control for any server size.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>WorldGuard</div>
-        <div class="mc-card-desc">Region protection, flag control, and anti-grief. Absolutely essential for public servers.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>Votifier + GAL</div>
-        <div class="mc-card-desc">Reward players for voting on server lists. Great for growing community servers organically.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>CMI</div>
-        <div class="mc-card-desc">All-in-one utility plugin replacing dozens of others. Animations, chat, economy, warps — everything.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot plugin"></div>Shopkeepers</div>
-        <div class="mc-card-desc">Player-run economy shops via custom villagers. Brings life and commerce to any survival server.</div>
-        <span class="mc-tag plugin">Plugin</span>
-      </div>
-    </div>
-
-    <!-- SERVER INFO -->
-    <div class="mc-panel mc-grid" id="tab-servers">
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot server"></div>ZAIREN SMP</div>
-        <div class="mc-card-desc">My main community survival server. Semi-vanilla with quality-of-life plugins. Join with Discord verification.</div>
-        <span class="mc-tag server">Survival</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot server"></div>Server IP</div>
-        <div class="mc-card-desc" style="font-family:'Space Mono',monospace;color:#3dff8f;">play.zairen.net</div>
-        <div class="mc-card-desc">Java Edition 1.21+ • Whitelisted via Discord</div>
-        <span class="mc-tag server">1.21+</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot server"></div>Preferred Platform</div>
-        <div class="mc-card-desc">Running Paper 1.21 for best performance + plugin compatibility. Tested with Fabric clients for compatibility.</div>
-        <span class="mc-tag server">Paper</span>
-      </div>
-      <div class="mc-card">
-        <div class="mc-card-title"><div class="mc-dot server"></div>Modpack Series</div>
-        <div class="mc-card-desc">Current series runs on ATM9 (All the Mods 9). Episodes drop every Saturday on YouTube.</div>
-        <span class="mc-tag server">ATM9</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="contact-inner">
-    <div class="section-label" style="text-align:center;">// Get In Touch</div>
-    <h2 class="section-title" style="text-align:center;">Work With Me</h2>
-    <p>For brand deals, collaborations, sponsorships or just to say hi — reach out via my business email. I typically respond within 48 hours.</p>
-    <a href="mailto:business@zairen.net" class="cta-btn">📧 business@zairen.net</a>
-  </div>
-</section>
-
+<!-- FOOTER -->
 <footer>
-  &copy; 2025 ZAIREN · All Rights Reserved · Made with ⚡
+  <div class="footer-logo">Aqua<span>MC</span></div>
+  <div class="footer-links">
+    <a href="#">Terms of Service</a><a href="#">Refund Policy</a>
+    <a href="https://discord.gg/yNaWs5ypnh" target="_blank">Discord</a><a href="#">Vote</a>
+  </div>
+  <p>© 2026 AquaMC · Not affiliated with Mojang Studios · play.aquamc.net</p>
 </footer>
 
+<!-- BUY MODAL -->
+<div class="overlay" id="buyOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBuy()">✕</button>
+    <div class="modal-icon" id="buyIcon">💎</div>
+    <div class="modal-title">Purchase Item</div>
+    <div class="modal-sub">Join our Discord and open a ticket. Our staff will help you within minutes!</div>
+    <div class="modal-item-name" id="buyItemName">Item — Price</div>
+    <a class="dc-modal-btn" href="https://discord.gg/yNaWs5ypnh" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Join Discord to Purchase
+    </a>
+    <div class="modal-note">Create a ticket in <strong>#purchase-support</strong> and mention the item above.</div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="overlay" id="authOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <div class="modal-title" style="margin-bottom:1.25rem;">My Account</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Register</button>
+    </div>
+    <div id="loginForm">
+      <div class="auth-form">
+        <div><label>Username</label><input type="text" placeholder="Your username" id="loginUser"/></div>
+        <div><label>Password</label><input type="password" placeholder="Your password" id="loginPass"/></div>
+        <button class="auth-submit" onclick="doLogin()">Login</button>
+      </div>
+      <div class="auth-divider" style="margin-top:1rem;">No account? <span style="color:var(--aqua);cursor:pointer;font-weight:600;" onclick="switchTab('register')">Register here</span></div>
+    </div>
+    <div id="registerForm" style="display:none;">
+      <div class="auth-form">
+        <div><label>Minecraft Username</label><input type="text" placeholder="YourIGN" id="regUser"/></div>
+        <div><label>Email Address</label><input type="email" placeholder="you@email.com" id="regEmail"/></div>
+        <div><label>Password</label><input type="password" placeholder="Create a password" id="regPass"/></div>
+        <div><label>Confirm Password</label><input type="password" placeholder="Repeat password" id="regPass2"/></div>
+        <button class="auth-submit" onclick="doRegister()">Create Account</button>
+      </div>
+      <div class="auth-divider" style="margin-top:1rem;">Have an account? <span style="color:var(--aqua);cursor:pointer;font-weight:600;" onclick="switchTab('login')">Login</span></div>
+    </div>
+    <div class="auth-success" id="authSuccess"></div>
+  </div>
+</div>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-// Custom cursor
-const cur = document.getElementById('cursor');
-const dot = document.getElementById('cursor-dot');
-let cx=0,cy=0,dx=0,dy=0;
+// ============================================================
+// THREE.JS 3D ANIMATED BACKGROUND
+// Floating Minecraft blocks, particles, space nebula
+// ============================================================
+(function(){
+  const canvas = document.getElementById('three-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-document.addEventListener('mousemove',e=>{
-  cx=e.clientX;cy=e.clientY;
-  dot.style.left=cx+'px';
-  dot.style.top=cy+'px';
-});
+  camera.position.z = 15;
 
-function animateCursor(){
-  dx+=(cx-dx)*.14;
-  dy+=(cy-dy)*.14;
-  cur.style.left=dx+'px';
-  cur.style.top=dy+'px';
-  requestAnimationFrame(animateCursor);
-}
-animateCursor();
+  // === LIGHTING ===
+  const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+  scene.add(ambientLight);
 
-document.querySelectorAll('a,button,.mc-tab').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('hover'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('hover'));
-});
+  const pointLight1 = new THREE.PointLight(0x00C6D4, 2, 50);
+  pointLight1.position.set(10, 10, 10);
+  scene.add(pointLight1);
 
-// Canvas starfield + grid
-const canvas = document.getElementById('canvas-bg');
-const ctx = canvas.getContext('2d');
-let W,H;
-function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
-resize();
-window.addEventListener('resize',resize);
+  const pointLight2 = new THREE.PointLight(0x9C27B0, 1.5, 40);
+  pointLight2.position.set(-10, -10, 5);
+  scene.add(pointLight2);
 
-const stars=[];
-for(let i=0;i<160;i++){
-  stars.push({
-    x:Math.random()*3000,y:Math.random()*3000,
-    s:Math.random()*1.5+.3,
-    a:Math.random(),
-    sp:Math.random()*.4+.1
-  });
-}
+  // === MINECRAFT BLOCKS ===
+  const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
+  const blockMaterials = [
+    new THREE.MeshStandardMaterial({color: 0x5D9E3F, metalness: 0.3, roughness: 0.7}), // Grass
+    new THREE.MeshStandardMaterial({color: 0x7A7A7A, metalness: 0.2, roughness: 0.8}), // Stone
+    new THREE.MeshStandardMaterial({color: 0x2E86AB, metalness: 0.6, roughness: 0.4, emissive: 0x1A6A8A, emissiveIntensity: 0.2}), // Water
+    new THREE.MeshStandardMaterial({color: 0x4FBDBA, metalness: 0.8, roughness: 0.2, emissive: 0x3A9A97, emissiveIntensity: 0.3}), // Diamond
+    new THREE.MeshStandardMaterial({color: 0xE8B84B, metalness: 0.4, roughness: 0.5, emissive: 0xC89A2E, emissiveIntensity: 0.5}), // Glowstone
+    new THREE.MeshStandardMaterial({color: 0x6B5B6E, metalness: 0.9, roughness: 0.3}), // Netherite
+  ];
 
-let t=0;
-function drawBg(){
-  ctx.clearRect(0,0,W,H);
-  t+=.004;
-
-  // Grid lines
-  ctx.strokeStyle='rgba(232,200,74,0.04)';
-  ctx.lineWidth=.5;
-  const gridSize=60;
-  const ox=(t*30)%gridSize;
-  for(let x=(-ox);x<W+gridSize;x+=gridSize){
-    ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
-  }
-  const oy=(t*20)%gridSize;
-  for(let y=(-oy);y<H+gridSize;y+=gridSize){
-    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
-  }
-
-  // Stars
-  stars.forEach(s=>{
-    s.a+=s.sp*0.01;
-    const alpha=.3+Math.sin(s.a)*0.25;
-    ctx.beginPath();
-    ctx.arc((s.x%W),(s.y%H),s.s,0,Math.PI*2);
-    ctx.fillStyle=`rgba(232,200,74,${alpha})`;
-    ctx.fill();
-  });
-
-  // Scanlines
-  for(let y=0;y<H;y+=4){
-    ctx.fillStyle='rgba(0,0,0,0.03)';
-    ctx.fillRect(0,y,W,1);
+  const blocks = [];
+  for(let i = 0; i < 25; i++){
+    const material = blockMaterials[Math.floor(Math.random() * blockMaterials.length)];
+    const block = new THREE.Mesh(blockGeometry, material);
+    block.position.set(
+      (Math.random() - 0.5) * 40,
+      (Math.random() - 0.5) * 40,
+      (Math.random() - 0.5) * 30
+    );
+    block.rotation.set(
+      Math.random() * Math.PI,
+      Math.random() * Math.PI,
+      Math.random() * Math.PI
+    );
+    block.scale.setScalar(Math.random() * 1.5 + 0.5);
+    block.userData = {
+      speedY: Math.random() * 0.008 + 0.002,
+      speedX: (Math.random() - 0.5) * 0.005,
+      rotSpeed: (Math.random() - 0.5) * 0.01
+    };
+    blocks.push(block);
+    scene.add(block);
   }
 
-  requestAnimationFrame(drawBg);
-}
-drawBg();
+  // === PARTICLES (STARS/GLOWS) ===
+  const particleGeometry = new THREE.BufferGeometry();
+  const particleCount = 500;
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
 
-// Tab switching
-function switchTab(name){
-  document.querySelectorAll('.mc-tab').forEach((t,i)=>{
-    const names=['mods','plugins','servers'];
-    t.classList.toggle('active',names[i]===name);
+  for(let i = 0; i < particleCount * 3; i += 3){
+    positions[i] = (Math.random() - 0.5) * 80;
+    positions[i + 1] = (Math.random() - 0.5) * 80;
+    positions[i + 2] = (Math.random() - 0.5) * 60;
+
+    const color = new THREE.Color();
+    if(Math.random() > 0.7){
+      color.setHex(0x00C6D4); // Aqua
+    } else if(Math.random() > 0.5){
+      color.setHex(0xFFFFFF); // White
+    } else {
+      color.setHex(0x80DEEA); // Light cyan
+    }
+    colors[i] = color.r;
+    colors[i + 1] = color.g;
+    colors[i + 2] = color.b;
+  }
+
+  particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const particleMaterial = new THREE.PointsMaterial({
+    size: 0.15,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending
   });
-  document.querySelectorAll('.mc-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+
+  const particles = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particles);
+
+  // === NEBULA FOG ===
+  scene.fog = new THREE.FogExp2(0x050d1a, 0.02);
+
+  // === MOUSE INTERACTION ===
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // === ANIMATION LOOP ===
+  function animate(){
+    requestAnimationFrame(animate);
+
+    // Animate blocks
+    blocks.forEach(block => {
+      block.position.y += block.userData.speedY;
+      block.position.x += block.userData.speedX;
+      block.rotation.x += block.userData.rotSpeed;
+      block.rotation.y += block.userData.rotSpeed * 0.7;
+
+      // Reset position if out of bounds
+      if(block.position.y > 25) block.position.y = -25;
+      if(block.position.x > 25) block.position.x = -25;
+      if(block.position.x < -25) block.position.x = 25;
+    });
+
+    // Animate particles
+    const positions = particles.geometry.attributes.position.array;
+    for(let i = 1; i < positions.length; i += 3){
+      positions[i] += 0.01; // Move upward
+      if(positions[i] > 40) positions[i] = -40;
+    }
+    particles.geometry.attributes.position.needsUpdate = true;
+
+    // Rotate particle system
+    particles.rotation.y += 0.0002;
+
+    // Camera follows mouse slightly
+    camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
+    camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
+    camera.lookAt(scene.position);
+
+    // Lights orbit
+    const time = Date.now() * 0.0005;
+    pointLight1.position.x = Math.sin(time) * 15;
+    pointLight1.position.z = Math.cos(time) * 15;
+    pointLight2.position.x = Math.sin(time + Math.PI) * 12;
+    pointLight2.position.z = Math.cos(time + Math.PI) * 12;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // === RESPONSIVE ===
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+
+// ============================================================
+// SITE FUNCTIONS
+// ============================================================
+function copyIP(){
+  try{navigator.clipboard.writeText('aquamc.hidenplay.net');}catch(e){}
+  const c = document.querySelector('.ip-chip');
+  const orig = c.textContent;
+  c.textContent = '✅ Copied!';
+  setTimeout(() => c.textContent = orig, 1500);
+}
+function openBuy(name,price,icon){
+  document.getElementById('buyIcon').textContent = icon;
+  document.getElementById('buyItemName').textContent = name + ' — ' + price;
+  document.getElementById('buyOverlay').classList.add('active');
+}
+function closeBuy(){document.getElementById('buyOverlay').classList.remove('active');}
+document.getElementById('buyOverlay').addEventListener('click', function(e){if(e.target === this)closeBuy();});
+function openAuth(){document.getElementById('authOverlay').classList.add('active');}
+function closeAuth(){document.getElementById('authOverlay').classList.remove('active');}
+document.getElementById('authOverlay').addEventListener('click', function(e){if(e.target === this)closeAuth();});
+function switchTab(tab){
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tabLogin').className = 'auth-tab' + (tab === 'login' ? ' active' : '');
+  document.getElementById('tabRegister').className = 'auth-tab' + (tab === 'register' ? ' active' : '');
+  document.getElementById('authSuccess').style.display = 'none';
+}
+function showMsg(msg, ok){
+  const s = document.getElementById('authSuccess');
+  s.textContent = msg;
+  s.style.display = 'block';
+  s.style.color = ok ? '#00C853' : '#EF5350';
+  s.style.background = ok ? 'rgba(0,200,83,0.1)' : 'rgba(239,83,80,0.1)';
+  s.style.border = '1px solid ' + (ok ? 'rgba(0,200,83,0.25)' : 'rgba(239,83,80,0.25)');
+}
+let currentUser = null;
+function doLogin(){
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if(!user || !pass){showMsg('Please fill in all fields.', false); return;}
+  const stored = localStorage.getItem('aquamc_u_' + user.toLowerCase());
+  if(!stored){showMsg('Account not found. Please register.', false); return;}
+  const data = JSON.parse(stored);
+  if(data.pass !== pass){showMsg('Incorrect password.', false); return;}
+  currentUser = data.username;
+  closeAuth();
+  updateNav();
+}
+function doRegister(){
+  const user = document.getElementById('regUser').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value.trim();
+  const pass2 = document.getElementById('regPass2').value.trim();
+  if(!user || !email || !pass || !pass2){showMsg('Please fill in all fields.', false); return;}
+  if(pass !== pass2){showMsg('Passwords do not match.', false); return;}
+  if(pass.length < 6){showMsg('Password must be 6+ characters.', false); return;}
+  if(localStorage.getItem('aquamc_u_' + user.toLowerCase())){showMsg('Username already taken!', false); return;}
+  localStorage.setItem('aquamc_u_' + user.toLowerCase(), JSON.stringify({username: user, email: email, pass: pass}));
+  currentUser = user;
+  closeAuth();
+  updateNav();
+}
+function updateNav(){
+  if(!currentUser) return;
+  const ini = currentUser.substring(0, 2).toUpperCase();
+  document.getElementById('navRight').innerHTML = '<div class="user-chip" onclick="logoutUser()"><div class="user-avatar">' + ini + '</div><span class="user-name">' + currentUser + '</span></div>';
+}
+function logoutUser(){
+  currentUser = null;
+  document.getElementById('navRight').innerHTML = '<button class="nav-btn" onclick="openAuth()">My Account</button>';
 }
 
-// Smooth reveal on scroll
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting)e.target.style.opacity='1',e.target.style.transform='translateY(0)';
-  });
-},{threshold:.1});
-document.querySelectorAll('.mc-card,.social-card,.stat').forEach(el=>{
-  el.style.opacity='0';
-  el.style.transform='translateY(24px)';
-  el.style.transition='opacity .5s ease,transform .5s ease';
-  observer.observe(el);
+// === CURSOR GLOW EFFECT ===
+const cursorGlow = document.createElement('div');
+cursorGlow.className = 'cursor-glow';
+document.body.appendChild(cursorGlow);
+document.addEventListener('mousemove', (e) => {
+  cursorGlow.style.left = e.clientX + 'px';
+  cursorGlow.style.top = e.clientY + 'px';
 });
 </script>
 </body>
