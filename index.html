@@ -1,235 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Voice English Tutor</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      color: white;
-    }
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      background: rgba(0,0,0,0.85);
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    h1 { text-align: center; margin-bottom: 10px; }
-    .level { text-align: center; margin-bottom: 20px; }
-    .chat {
-      height: 420px;
-      overflow-y: auto;
-      padding: 15px;
-      background: #1a1a2e;
-      border-radius: 15px;
-      margin-bottom: 15px;
-    }
-    .message {
-      margin: 12px 0;
-      padding: 12px 16px;
-      border-radius: 18px;
-      max-width: 80%;
-    }
-    .user { background: #4e9cff; margin-left: auto; border-bottom-right-radius: 4px; }
-    .ai { background: #2a2a3a; margin-right: auto; border-bottom-left-radius: 4px; }
-    .controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    button {
-      padding: 14px 24px;
-      font-size: 16px;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-    }
-    .mic-btn {
-      background: #e74c3c;
-      color: white;
-      font-size: 18px;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-    }
-    .mic-btn.listening {
-      background: #27ae60;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } }
-    input { flex: 1; padding: 15px; border-radius: 50px; border: none; font-size: 16px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAIREN - Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+            background: #000;
+            color: #a5f3fc;
+            overflow-x: hidden;
+        }
+        .bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+        .bg-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+        }
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.55);
+        }
+        .meteor {
+            position: absolute;
+            z-index: 5;
+            width: 180px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(191,219,254,0.95));
+            filter: drop-shadow(0 0 8px rgba(191,219,254,0.9));
+            transform: rotate(-35deg);
+            opacity: 0;
+            animation: meteor-travel 5s linear infinite;
+        }
+        .meteor::after {
+            content: "";
+            position: absolute;
+            right: -4px;
+            top: -3px;
+            height: 8px;
+            width: 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.95);
+        }
+        .meteor-one { top: 24%; left: 11%; animation-delay: 0.2s; }
+        .meteor-two { top: 18%; right: 18%; animation-delay: 1.5s; }
+        .meteor-three { top: 64%; right: 8%; animation-delay: 2.9s; }
+        @keyframes meteor-travel {
+            0% { transform: translate3d(0,0,0) rotate(-35deg); opacity: 0; }
+            15% { opacity: 1; }
+            65% { opacity: 1; }
+            100% { transform: translate3d(360px,230px,0) rotate(-35deg); opacity: 0; }
+        }
+        .sound-btn {
+            position: fixed;
+            left: 24px;
+            top: 32px;
+            z-index: 20;
+            background: none;
+            border: none;
+            color: #fb7185;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .sound-btn:hover { color: #fda4af; }
+        .sound-btn svg {
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 0 10px rgba(244,63,94,0.7));
+        }
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .profile-card {
+            width: 100%;
+            max-width: 28rem;
+            border-radius: 24px;
+            border: 1px solid rgba(207,250,254,0.2);
+            background: rgba(15,23,42,0.35);
+            padding: 16px;
+            box-shadow: 0 0 40px rgba(22,163,255,0.2);
+            backdrop-filter: blur(20px);
+            animation: fade-in 0.8s ease-out;
+        }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .profile-orb {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            isolation: isolate;
+        }
+        .profile-orb::before {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            z-index: -1;
+            border-radius: 999px;
+            background: conic-gradient(from 0deg, rgba(125,211,252,0.9), rgba(244,114,182,0.9), rgba(125,211,252,0.9));
+            animation: spin-ring 2.6s linear infinite;
+        }
+        .profile-orb::after {
+            content: "";
+            position: absolute;
+            inset: -11px;
+            z-index: -2;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(56,189,248,0.45), rgba(15,23,42,0));
+            animation: pulse-aura 2.4s ease-in-out infinite;
+        }
+        @keyframes spin-ring {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-aura {
+            0%, 100% { transform: scale(0.92); opacity: 0.55; }
+            50% { transform: scale(1.06); opacity: 1; }
+        }
+        .profile-frame {
+            position: absolute;
+            inset: -6px;
+            z-index: 3;
+            border-radius: 999px;
+            border: 1px solid rgba(125,211,252,0.7);
+            box-shadow: inset 0 0 16px rgba(34,211,238,0.45), 0 0 12px rgba(56,189,248,0.45);
+            animation: pulse-frame 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes pulse-frame {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        .profile-spark {
+            position: absolute;
+            z-index: 4;
+            height: 8px;
+            width: 8px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(125,211,252,0.25));
+            filter: drop-shadow(0 0 6px rgba(125,211,252,1));
+            animation: spark-flicker 1.8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .profile-spark-one { top: -2px; left: 10%; }
+        .profile-spark-two { top: 22%; right: -5px; animation-delay: 0.4s; }
+        .profile-spark-three { bottom: -2px; left: 24%; animation-delay: 0.8s; }
+        @keyframes spark-flicker {
+            0%, 100% { transform: scale(0.75); opacity: 0.55; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .avatar-media {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(207,250,254,0.7);
+        }
+        .avatar-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-status {
+            position: absolute;
+            z-index: 5;
+            right: -2px;
+            bottom: -2px;
+            height: 14px;
+            width: 14px;
+            border-radius: 999px;
+            border: 2px solid rgba(15,23,42,0.85);
+            background: radial-gradient(circle at 30% 30%, rgba(134,239,172,1), rgba(22,163,74,1));
+            box-shadow: 0 0 10px rgba(74,222,128,0.8);
+        }
+        .header-text .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            color: rgba(207,250,254,0.7);
+        }
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #fb7185;
+        }
+        .content-box {
+            border-radius: 20px;
+            border: 1px solid rgba(103,232,249,0.3);
+            background: rgba(22,78,99,0.2);
+            padding: 20px;
+        }
+        .content-box h2 {
+            text-align: center;
+            font-size: 1.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #67e8f9;
+            text-shadow: 0 0 10px rgba(34,211,238,0.6);
+            margin-bottom: 20px;
+        }
+        .content-box p {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            line-height: 1.6;
+            color: rgba(103,232,249,0.95);
+            margin-bottom: 12px;
+        }
+        .content-box .highlight {
+            font-size: 1.25rem;
+            color: #67e8f9;
+            margin-top: 16px;
+        }
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(207,250,254,0.3);
+            background: rgba(15,23,42,0.45);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+        }
+        .social-link:hover {
+            border-color: rgba(207,250,254,0.6);
+            background: rgba(30,41,59,0.7);
+        }
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s;
+        }
+        .social-link:hover svg { transform: scale(1.1); }
+        .discord { color: #7dd3fc; }
+        .youtube { color: #fda4af; }
+        .spotify { color: #86efac; }
+        @media (max-width: 640px) {
+            .profile-card { max-width: 100%; }
+            .social-links { grid-template-columns: 1fr; }
+            .content-box h2 { font-size: 1.5rem; }
+            .content-box .highlight { font-size: 1.125rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🗣️ Voice English Tutor</h1>
-    <div class="level">
-      Level: 
-      <select id="level" onchange="changeLevel()">
-        <option value="Beginner">Beginner</option>
-        <option value="Intermediate" selected>Intermediate</option>
-        <option value="Advanced">Advanced</option>
-      </select>
+    <div class="bg-container">
+        <img src="https://i.pinimg.com/originals/43/5c/78/435c78f37241e7dac8503f46161bd0e9.gif" alt="Background">
+        <div class="bg-overlay"></div>
     </div>
-
-    <div class="chat" id="chat"></div>
-
-    <div class="controls">
-      <button class="mic-btn" id="micBtn">🎤</button>
-      <input type="text" id="textInput" placeholder="Or type here and press Enter..." />
-      <button onclick="sendText()">Send</button>
+    
+    <div class="meteor meteor-one"></div>
+    <div class="meteor meteor-two"></div>
+    <div class="meteor meteor-three"></div>
+    
+    <button class="sound-btn" aria-label="Sound">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 10v4h4l5 5V5l-5 5H3Zm13.5 2c0-1.77-1-3.29-2.5-4.03v8.05A4.48 4.48 0 0 0 16.5 12Zm0-9v2.06c2.89.86 5 3.54 5 6.94 0 3.4-2.11 6.08-5 6.94V21c4.01-.91 7-4.49 7-9s-2.99-8.09-7-9Z"/>
+        </svg>
+    </button>
+    
+    <div class="container">
+        <div class="profile-card">
+            <div class="header">
+                <div class="profile-orb">
+                    <span class="profile-frame"></span>
+                    <span class="profile-spark profile-spark-one"></span>
+                    <span class="profile-spark profile-spark-two"></span>
+                    <span class="profile-spark profile-spark-three"></span>
+                    <div class="avatar-media">
+                        <video src="https://v1.pinimg.com/videos/mc/720p/c1/2a/76/c12a7680876b62e60088a26424c56aa7.mp4" autoplay loop muted playsinline></video>
+                    </div>
+                    <span class="profile-status"></span>
+                </div>
+                <div class="header-text">
+                    <div class="label">✨</div>
+                    <h1>ZAIREN</h1>
+                </div>
+            </div>
+            
+            <div class="content-box">
+                <h2>ZAIREN</h2>
+                <p>I am fully cursed</p>
+                <p>I think I dont born to live in this world</p>
+                <p style="padding-top: 12px;">Cause</p>
+                <p>
+                    What I think<br>
+                    What I fell<br>
+                    Those are tollay diferenet from others
+                </p>
+                <p class="highlight">So I think that I am not a regular human</p>
+            </div>
+            
+            <div class="social-links">
+                <a href="https://discord.com" target="_blank" class="social-link">
+                    <svg class="discord" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.32 4.37A19.79 19.79 0 0 0 16.33 3a14.24 14.24 0 0 0-.68 1.37 18.54 18.54 0 0 0-5.3 0A14.24 14.24 0 0 0 9.67 3a19.79 19.79 0 0 0-3.99 1.37C3.15 8.08 2.46 11.7 2.8 15.27a19.97 19.97 0 0 0 4.9 2.48c.4-.56.75-1.15 1.06-1.77-.58-.22-1.14-.5-1.66-.81.14-.1.27-.2.4-.3a13.93 13.93 0 0 0 12.98 0c.13.1.26.2.4.3-.53.31-1.09.59-1.67.81.31.62.66 1.21 1.07 1.77a19.98 19.98 0 0 0 4.9-2.48c.4-4.14-.67-7.72-2.86-10.9Zm-8.32 8.7c-.98 0-1.79-.9-1.79-2s.79-2 1.79-2c1 0 1.8.9 1.79 2 0 1.1-.8 2-1.79 2Zm6 0c-.98 0-1.79-.9-1.79-2s.79-2 1.79-2c1 0 1.8.9 1.79 2 0 1.1-.8 2-1.79 2Z"/>
+                    </svg>
+                    Discord
+                </a>
+                <a href="https://youtube.com" target="_blank" class="social-link">
+                    <svg class="youtube" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.5 7.2a3.02 3.02 0 0 0-2.13-2.14C19.49 4.5 12 4.5 12 4.5s-7.49 0-9.37.56A3.02 3.02 0 0 0 .5 7.2 31.1 31.1 0 0 0 0 12a31.1 31.1 0 0 0 .5 4.8 3.02 3.02 0 0 0 2.13 2.14c1.88.56 9.37.56 9.37.56s7.49 0 9.37-.56a3.02 3.02 0 0 0 2.13-2.14A31.1 31.1 0 0 0 24 12a31.1 31.1 0 0 0-.5-4.8ZM9.6 15.1V8.9L15.8 12l-6.2 3.1Z"/>
+                    </svg>
+                    YouTube
+                </a>
+                <a href="https://spotify.com" target="_blank" class="social-link">
+                    <svg class="spotify" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.58 17.3a.75.75 0 0 1-1.03.24c-2.83-1.73-6.4-2.13-10.6-1.18a.75.75 0 1 1-.33-1.46c4.58-1.04 8.52-.58 11.7 1.36.35.21.46.67.25 1.03Zm1.47-3.27a.95.95 0 0 1-1.3.3c-3.24-1.99-8.18-2.56-12.01-1.39a.95.95 0 1 1-.56-1.82c4.37-1.33 9.82-.7 13.56 1.6.44.27.58.86.31 1.31Zm.13-3.4c-3.89-2.31-10.31-2.52-14.03-1.4a1.14 1.14 0 1 1-.66-2.19c4.27-1.3 11.36-1.05 15.85 1.62a1.14 1.14 0 0 1-1.16 1.97Z"/>
+                    </svg>
+                    Spotify
+                </a>
+            </div>
+        </div>
     </div>
-
-    <p style="text-align:center; font-size:14px; margin-top:15px;">
-      OpenAI API Key: <input type="password" id="apiKey" placeholder="sk-..." style="width:280px;"/>
-    </p>
-  </div>
-
-  <script>
-    let messages = [];
-    let isListening = false;
-    let recognition = null;
-
-    const chat = document.getElementById('chat');
-    const micBtn = document.getElementById('micBtn');
-    const textInput = document.getElementById('textInput');
-    const apiKeyInput = document.getElementById('apiKey');
-
-    function addMessage(text, sender) {
-      const div = document.createElement('div');
-      div.className = `message ${sender}`;
-      div.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Tutor'}:</strong><br>${text}`;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      speechSynthesis.speak(utterance);
-    }
-
-    async function sendToAI(userText) {
-      const level = document.getElementById('level').value;
-      const apiKey = apiKeyInput.value.trim();
-
-      if (!apiKey) {
-        alert("Please enter your OpenAI API key");
-        return;
-      }
-
-      addMessage(userText, 'user');
-
-      const systemPrompt = `You are a friendly and patient English tutor. 
-      The student is at ${level} level. 
-      Correct their grammar gently, show the corrected sentence, explain mistakes simply, 
-      and continue the conversation naturally. Speak like a real teacher.`;
-
-      try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              { role: "system", content: systemPrompt },
-              ...messages,
-              { role: "user", content: userText }
-            ],
-            temperature: 0.7
-          })
-        });
-
-        const data = await response.json();
-        const reply = data.choices[0].message.content;
-        
-        messages.push({ role: "user", content: userText });
-        messages.push({ role: "assistant", content: reply });
-
-        addMessage(reply, 'ai');
-        speak(reply);
-
-      } catch (err) {
-        addMessage("Sorry, there was an error. Please check your API key.", 'ai');
-      }
-    }
-
-    // Voice Recognition
-    function startListening() {
-      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-        alert("Your browser does not support voice input.");
-        return;
-      }
-
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-
-      recognition.onstart = () => {
-        isListening = true;
-        micBtn.classList.add('listening');
-        micBtn.textContent = '🎙️';
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        sendToAI(transcript);
-      };
-
-      recognition.onend = () => {
-        isListening = false;
-        micBtn.classList.remove('listening');
-        micBtn.textContent = '🎤';
-      };
-
-      recognition.start();
-    }
-
-    micBtn.addEventListener('click', () => {
-      if (isListening) {
-        recognition.stop();
-      } else {
-        startListening();
-      }
-    });
-
-    function sendText() {
-      const text = textInput.value.trim();
-      if (text) {
-        sendToAI(text);
-        textInput.value = '';
-      }
-    }
-
-    textInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendText();
-    });
-
-    function changeLevel() {
-      messages = [];
-      chat.innerHTML = '';
-      addMessage("Hello! I'm your personal English tutor. How are you today?", 'ai');
-      speak("Hello! I'm your personal English tutor. How are you today?");
-    }
-
-    // Start with greeting
-    window.onload = () => {
-      addMessage("Hello! I'm your personal English tutor. How are you today?", 'ai');
-      speak("Hello! I'm your personal English tutor. How are you today?");
-    };
-  </script>
 </body>
 </html>
